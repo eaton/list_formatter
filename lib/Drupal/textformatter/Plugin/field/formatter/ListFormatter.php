@@ -51,11 +51,7 @@ class ListFormatter extends FormatterBase {
     $elements['type'] = array(
       '#title' => t("List type"),
       '#type' => 'select',
-      '#options' => array(
-        'ul' => t("Unordered HTML list (ul)"),
-        'ol' => t("Ordered HTML list (ol)"),
-        'comma' => t("Comma separated list"),
-      ),
+      '#options' => $this->listTypes(),
       '#default_value' => $this->getSetting('type'),
       '#required' => TRUE,
     );
@@ -149,7 +145,6 @@ class ListFormatter extends FormatterBase {
       '#size' => 40,
       '#description' => t("A CSS class to use in the markup for the field list."),
       '#default_value' => $this->getSetting('class'),
-      '#required' => FALSE,
       '#element_validate' => array('_textformatter_validate_class'),
     );
 
@@ -179,17 +174,8 @@ class ListFormatter extends FormatterBase {
   public function settingsSummary() {
     $summary = array();
 
-    switch ($this->getSetting('type')) {
-      case 'ul':
-        $summary[] = t("Unordered HTML list");
-        break;
-      case 'ol':
-        $summary[] = t("Ordered HTML list");
-        break;
-      case 'comma':
-        $summary[] = t("Comma separated list");
-        break;
-    }
+    $types = $this->listTypes();
+    $summary[] = $types[$this->getSetting('type')];
 
     if ($this->getSetting('class')) {
       $summary[] = t("CSS Class") . ': <em>' . check_plain($this->getSetting('class')) . '</em>';
@@ -206,7 +192,7 @@ class ListFormatter extends FormatterBase {
    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::viewElements().
    */
   public function viewElements(EntityInterface $entity, $langcode, array $items) {
-    //$textformatters = textformatter_field_list_info();
+    $textformatters = textformatter_field_list_info();
     $elements = $list_items = array();
 
     if (isset($textformatters[$module]) && in_array($field['type'], $textformatters[$module]['fields'])) {
@@ -259,6 +245,14 @@ class ListFormatter extends FormatterBase {
     }
 
     return $elements;
+  }
+
+  public function listTypes() {
+    return array(
+      'ul' => t("Unordered HTML list (ul)"),
+      'ol' => t("Ordered HTML list (ol)"),
+      'comma' => t("Comma separated list"),
+    );
   }
 
   /**

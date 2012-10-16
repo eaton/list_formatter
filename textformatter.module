@@ -28,23 +28,6 @@ function textformatter_help($path, $arg) {
 }
 
 /**
- * Validate that a space-separated list of values are lowercase and appropriate
- * for use as HTML classes.
- *
- * @see textformatter_field_formatter_settings_form()
- */
-function _textformatter_validate_class($element, &$form_state) {
-  $value = drupal_array_get_nested_value($form_state['values'], $element['#parents']);
-  $classes = explode(' ', $value);
-  foreach ($classes as $class) {
-    if ($class != drupal_html_class($class)) {
-      form_error($element, t('List classes contain illegal characters; classes should be lowercase and may contain letters, numbers, and dashes.'));
-      return;
-    }
-  }
-}
-
-/**
  * Implements hook_theme().
  */
 function textformatter_theme($existing, $type, $theme, $path) {
@@ -255,6 +238,23 @@ function _textformatter_field_info() {
   }
 
   return $field_info;
+}
+
+/**
+ * Validate that a space-separated list of values are lowercase and appropriate
+ * for use as HTML classes.
+ *
+ * @see textformatter_field_formatter_settings_form()
+ */
+function _textformatter_validate_class($element, &$form_state) {
+  $value = drupal_array_get_nested_value($form_state['values'], $element['#parents']);
+  $classes = explode(' ', $value);
+  foreach ($classes as $class) {
+    if ($class != drupal_html_class($class)) {
+      form_error($element, t('List classes contain illegal characters; classes should be lowercase and may contain letters, numbers, and dashes.'));
+      return;
+    }
+  }
 }
 
 /**
