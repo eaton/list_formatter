@@ -45,6 +45,8 @@ class ListFormatter extends FormatterBase {
    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::settingsForm().
    */
   public function settingsForm(array $form, array &$form_state) {
+    $field = $this->field;
+dpm($field);
     $elements['type'] = array(
       '#title' => t("List type"),
       '#type' => 'select',
@@ -62,8 +64,8 @@ class ListFormatter extends FormatterBase {
       '#default_value' => $this->getSetting('comma_and'),
       '#states' => array(
         'visible' => array(
-          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][textformatter_type]"]' => array('value' => 'comma'),
-          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][textformatter_comma_override]"]' => array('checked' => FALSE),
+          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][type]"]' => array('value' => 'comma'),
+          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][comma_override]"]' => array('checked' => FALSE),
         ),
       ),
     );
@@ -73,8 +75,8 @@ class ListFormatter extends FormatterBase {
       '#default_value' => $this->getSetting('comma_full_stop'),
       '#states' => array(
         'visible' => array(
-          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][textformatter_type]"]' => array('value' => 'comma'),
-          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][textformatter_comma_override]"]' => array('checked' => FALSE),
+          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][type]"]' => array('value' => 'comma'),
+          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][comma_override]"]' => array('checked' => FALSE),
         ),
       ),
     );
@@ -87,7 +89,7 @@ class ListFormatter extends FormatterBase {
       '#default_value' => $this->getSetting('comma_override'),
       '#states' => array(
         'visible' => array(
-          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][textformatter_type]"]' => array('value' => 'comma'),
+          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][type]"]' => array('value' => 'comma'),
         ),
       ),
     );
@@ -99,7 +101,7 @@ class ListFormatter extends FormatterBase {
       '#default_value' => $this->getSetting('separator_custom'),
       '#states' => array(
         'visible' => array(
-          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][textformatter_comma_override]"]' => array('checked' => TRUE),
+          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][comma_override]"]' => array('checked' => TRUE),
         ),
       ),
     );
@@ -111,7 +113,7 @@ class ListFormatter extends FormatterBase {
       '#default_value' => $this->getSetting('separator_custom_tag'),
       '#states' => array(
         'visible' => array(
-          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][textformatter_comma_override]"]' => array('checked' => TRUE),
+          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][comma_override]"]' => array('checked' => TRUE),
         ),
       ),
     );
@@ -123,7 +125,7 @@ class ListFormatter extends FormatterBase {
       '#element_validate' => array('_textformatter_validate_class'),
       '#states' => array(
         'visible' => array(
-          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][textformatter_comma_override]"]' => array('checked' => TRUE),
+          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][comma_override]"]' => array('checked' => TRUE),
         ),
       ),
     );
@@ -136,7 +138,7 @@ class ListFormatter extends FormatterBase {
       '#default_value' => $this->getSetting('comma_tag'),
       '#states' => array(
         'visible' => array(
-          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][textformatter_type]"]' => array('value' => 'comma'),
+          ':input[name="fields[' . $field['field_name'] . '][settings_edit_form][settings][type]"]' => array('value' => 'comma'),
         ),
       ),
     );
@@ -189,7 +191,7 @@ class ListFormatter extends FormatterBase {
     }
 
     if ($this->getSetting('class')) {
-      $summary[] = t("CSS Class") . ': <em>' . check_plain($this->getSetting('textformatter_class')) . '</em>';
+      $summary[] = t("CSS Class") . ': <em>' . check_plain($this->getSetting('class')) . '</em>';
     }
 
     if ($this->getSetting('comma_override')) {
@@ -205,7 +207,7 @@ class ListFormatter extends FormatterBase {
   public function viewElements(EntityInterface $entity, $langcode, array $items) {
     //$textformatters = textformatter_field_list_info();
     $elements = $list_items = array();
-dpm($items);
+
     // if (isset($textformatters[$module]) && in_array($field['type'], $textformatters[$module]['fields'])) {
     //   $function = $textformatters[$module]['callback'];
     //   if (function_exists($function)) {
