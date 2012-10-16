@@ -22,7 +22,8 @@ use Drupal\field\Plugin\Type\Formatter\FormatterBase;
  *   field_types = {
  *     "text",
  *     "text_long",
- *     "text_with_summary"
+ *     "text_with_summary",
+ *     "taxonomy_term_reference"
  *   },
  *   settings = {
  *     "type" = "ul",
@@ -46,7 +47,7 @@ class ListFormatter extends FormatterBase {
    */
   public function settingsForm(array $form, array &$form_state) {
     $field = $this->field;
-dpm($field);
+
     $elements['type'] = array(
       '#title' => t("List type"),
       '#type' => 'select',
@@ -109,7 +110,7 @@ dpm($field);
       '#type' => 'select',
       '#title' => t("separator HTML wrapper"),
       '#description' => t("An HTML tag to wrap the separator in."),
-      '#options' => _textformatter_wrapper_options(),
+      '#options' => $this->wrapperOptions(),
       '#default_value' => $this->getSetting('separator_custom_tag'),
       '#states' => array(
         'visible' => array(
@@ -134,7 +135,7 @@ dpm($field);
       '#type' => 'select',
       '#title' => t("HTML wrapper"),
       '#description' => t("An HTML tag to wrap the list in. The CSS class below will be added to this tag."),
-      '#options' => _textformatter_wrapper_options(),
+      '#options' => $this->wrapperOptions(),
       '#default_value' => $this->getSetting('comma_tag'),
       '#states' => array(
         'visible' => array(
@@ -153,13 +154,13 @@ dpm($field);
     );
 
     // Taxonomy term ref fields only.
-    // if ($field['type'] == 'taxonomy_term_reference') {
-    //   $elements['textformatter_term_plain'] = array(
-    //     '#type' => 'checkbox',
-    //     '#title' => t("Display taxonomy terms as plain text (Not term links)."),
-    //     '#default_value' => $settings['textformatter_term_plain'],
-    //   );
-    // }
+    if ($this->field['type'] == 'taxonomy_term_reference') {
+      $elements['textformatter_term_plain'] = array(
+        '#type' => 'checkbox',
+        '#title' => t("Display taxonomy terms as plain text (Not term links)."),
+        '#default_value' => $settings['textformatter_term_plain'],
+      );
+    }
 
     // @todo
     // $context = array(
@@ -208,17 +209,17 @@ dpm($field);
     //$textformatters = textformatter_field_list_info();
     $elements = $list_items = array();
 
-    // if (isset($textformatters[$module]) && in_array($field['type'], $textformatters[$module]['fields'])) {
-    //   $function = $textformatters[$module]['callback'];
-    //   if (function_exists($function)) {
-    //     $list_items = $function($entity_type, $entity, $field, $instance, $langcode, $items, $display);
-    //   }
-    // }
-    // else {
-    //   foreach ($items as $delta => $item) {
-    //     $list_items = textformatter_default_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display);
-    //   }
-    // }
+    if (isset($textformatters[$module]) && in_array($field['type'], $textformatters[$module]['fields'])) {
+      $function = $textformatters[$module]['callback'];
+      if (function_exists($function)) {
+        $list_items = $function($entity_type, $entity, $field, $instance, $langcode, $items, $display);
+      }
+    }
+    else {
+      foreach ($items as $delta => $item) {
+        $list_items = textformatter_default_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display);
+      }
+    }
 
     // If there are no list items, return and render nothing.
     if (empty($list_items)) {
@@ -258,6 +259,27 @@ dpm($field);
     }
 
     return $elements;
+  }
+
+  /**
+   * Helper method return an array of html tags; formatted for a select list.
+   *
+   * @return array
+   *   A keyed array of available html tags.
+   */
+  public function wrapperOptions() {
+    return array(
+      t('No HTML tag'),
+      'div' => t('Div'),
+      'span' => t('Span'),
+      'p' => t('Paragraph'),
+      'h1' => t('Header 1'),
+      'h2' => t('Header 2'),
+      'h3' => t('Header 3'),
+      'h4' => t('Header 4'),
+      'h5' => t('Header 5'),
+      'h6' => t('Header 6'),
+    );
   }
 
 }
