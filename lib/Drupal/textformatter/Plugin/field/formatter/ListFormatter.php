@@ -185,7 +185,7 @@ class ListFormatter extends FormatterBase {
       $summary[] = '<em>*' . t("Comma separator overridden") . '*</em>';
     }
 
-    return theme('item_list', array('type' => 'ul', 'items' => $summary));
+    return implode('<br>', $summary);
   }
 
   /**
@@ -203,7 +203,7 @@ class ListFormatter extends FormatterBase {
     }
     else {
       foreach ($items as $delta => $item) {
-        $list_items = textformatter_default_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display);
+        $list_items = $this->defaultFieldList($entity, $langcode, $items);
       }
     }
 
@@ -247,6 +247,28 @@ class ListFormatter extends FormatterBase {
     return $elements;
   }
 
+  /**
+   * Default listing callback.
+   */
+  public function defaultFieldList(EntityInterface $entity, $langcode, array $items) {
+    $list_items = array();
+
+    // Use our helper function to get the value key dynamically.
+    $value_key = _textformatter_get_field_value_key($this->field);
+
+    foreach ($items as $delta => $item) {
+      $list_items[$delta] = check_plain($item[$value_key]);
+    }
+
+    return $list_items;
+  }
+
+  /**
+   * Returns a list of available list types.
+   *
+   * @return array
+   *   An options list of types.
+   */
   public function listTypes() {
     return array(
       'ul' => t("Unordered HTML list (ul)"),
