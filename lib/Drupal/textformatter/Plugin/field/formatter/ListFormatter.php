@@ -152,13 +152,12 @@ class ListFormatter extends FormatterBase {
       );
     }
 
-    // @todo
-    // $context = array(
-    //   'field' => $field,
-    //   'instance' => $instance,
-    //   'view_mode' => $view_mode
-    // );
-    // drupal_alter('textformatter_field_formatter_settings_form', $form, $form_state, $context);
+    $context = array(
+      'field' => $this->field,
+      'instance' => $this->instance,
+      'view_mode' => $this->viewMode,
+    );
+    drupal_alter('textformatter_field_formatter_settings_form', $form, $form_state, $context);
 
     return $elements;
   }
