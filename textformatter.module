@@ -5,6 +5,8 @@
  * Provide a field formatter to render values as HTML or comma-separated lists.
  */
 
+use Drupal\textformatter\Plugin\field\formatter\ListFormatter;
+
 /**
  * Implements hook_help().
  */
@@ -27,12 +29,26 @@ function textformatter_help($path, $arg) {
 }
 
 /**
+ * Implements hook_field_formatter_info_alter().
+ */
+function textformatter_field_formatter_info_alter(&$info) {
+  $textformatter_info = ListFormatter::prepareFieldListInfo();
+
+  $info['list_formatter']['field_types'] = $textformatter_info['fields'];
+  $info['list_formatter']['settings']['contrib'] = $textformatter_info['settings'];
+}
+
+/**
  * Implements hook_theme().
  */
 function textformatter_theme($existing, $type, $theme, $path) {
   return array(
     'textformatter_comma' => array(
-      'variables' => array('items' => NULL, 'settings' => NULL, 'attributes' => NULL),
+      'variables' => array(
+        'items' => NULL,
+        'settings' => NULL,
+        'attributes' => NULL
+      ),
     ),
   );
 }
@@ -80,30 +96,13 @@ function theme_textformatter_comma($variables) {
 }
 
 /**
- * Wrapper function for invoking hook_textformatter_field_list_info.
- *
- * Statically caches $info as this could get called multiple times
- * for different fields using this formatter in a request.
- */
-function textformatter_field_list_info() {
-  $info = &drupal_static(__FUNCTION__);
-
-  if (empty($info)) {
-    $info = module_invoke_all('textformatter_field_info');
-    drupal_alter('textformatter_field_info', $info);
-  }
-
-  return $info;
-}
-
-/**
  * Implements hook_textformatter_field_info().
  */
 function textformatter_textformatter_field_info() {
   $info = array();
 
   $info['text'] = array(
-    'fields' => array('text', 'text_long'),
+    'fields' => array('text', 'text_long', 'text_with_summary'),
     'callback' => 'textformatter_text_field_create_list',
   );
   $info['number'] = array(
@@ -125,8 +124,8 @@ function textformatter_textformatter_field_info() {
 /**
  * Create list for text fields.
  */
-function textformatter_text_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-  $settings = $display['settings'];
+function textformatter_text_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items) {
+  $settings = $instance['settings'];
   $list_items = array();
 
   if ($field['type'] == 'text_long') {
@@ -151,7 +150,7 @@ function textformatter_text_field_create_list($entity_type, $entity, $field, $in
 /**
  * Create list for list fields.
  */
-function textformatter_list_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+function textformatter_list_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items) {
   $settings = $display['settings'];
   $list_items = array();
 
@@ -169,7 +168,7 @@ function textformatter_list_field_create_list($entity_type, $entity, $field, $in
 /**
  * Create list for taxonomy reference fields.
  */
-function textformatter_taxonomy_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+function textformatter_taxonomy_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items) {
   $settings = $display['settings'];
   $list_items = $tids = array();
 
