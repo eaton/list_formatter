@@ -203,6 +203,9 @@ class ListFormatter extends FormatterBase {
       if (function_exists($function)) {
         $list_items = $function($entity->entityType(), $entity, $this->field, $this->instance, $langcode, $items);
       }
+      else {
+        drupal_set_message(t('function @function does not exist.', array('@function' => $function)), 'error');
+      }
     }
     else {
       foreach ($items as $delta => $item) {
@@ -251,7 +254,7 @@ class ListFormatter extends FormatterBase {
   }
 
   /**
-   * Returns an array of info data for any modules implementing hook_textformatter_field_info().
+   * Returns an array of info data, invoking hook_textformatter_field_info().
    *
    * @return array
    *   An array of info data.
@@ -268,21 +271,25 @@ class ListFormatter extends FormatterBase {
   /**
    * Returns an array of info to add to hook_field_formatter_info_alter().
    *
+   * This iterates through each item returned from fieldListInfo.
+   *
    * @return array
    *   An array of fields and settings from hook_textformatter_field_info data
-   *   implementations.
+   *   implementations. Containing an aggregated array from all items.
    */
   static public function prepareFieldListInfo() {
-    // Invokes hook_textformatter_field_info.
     $textformatter_info = self::fieldListInfo();
     $field_info = array('fields' => array(), 'settings' => array());
 
     // Create array of all field types and default settings.
     foreach ($textformatter_info as $module => $info) {
+      $info += array(
+        'fields' => array(),
+        'settings' => array(),
+      );
+
       $field_info['fields'] = array_merge($field_info['fields'], $info['fields']);
-      if (isset($info['settings']) && is_array($info['settings'])) {
-        $field_info['settings'] = array_merge($field_info['settings'], $info['settings']);
-      }
+      $field_info['settings'] = array_merge($field_info['settings'], $info['settings']);
     }
 
     return $field_info;
