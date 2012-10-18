@@ -38,6 +38,13 @@ use Drupal\field\Plugin\Type\Formatter\FormatterBase;
 class ListFormatter extends FormatterBase {
 
   /**
+   * Stores the textformatter info collected from hook_textformatter_field_info().
+   *
+   * @var array
+   */
+  static protected $textformatterInfo = array();
+
+  /**
    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::settingsForm().
    */
   public function settingsForm(array $form, array &$form_state) {
@@ -191,7 +198,7 @@ class ListFormatter extends FormatterBase {
     $textformatter_info = $this->fieldListInfo();
     $elements = $list_items = array();
 
-    if (!empty($textformatter_info[$module]) && in_array($field_type, $textformatter_info[$module]['fields'])) {
+    if (!empty($textformatter_info[$module]['callback']) && in_array($field_type, $textformatter_info[$module]['fields'])) {
       $function = $textformatter_info[$module]['callback'];
       if (function_exists($function)) {
         $list_items = $function($entity->entityType(), $entity, $this->field, $this->instance, $langcode, $items);
@@ -217,8 +224,8 @@ class ListFormatter extends FormatterBase {
     switch ($type) {
       case 'ul':
       case 'ol':
-        // Render elements as one piece of markup and theme as item list.
-        $elements[0] = array(
+        // Render as one element, item list.
+        $elements[] = array(
           '#theme' => 'item_list',
           '#type' => $type,
           '#items' => $list_items,
@@ -228,8 +235,8 @@ class ListFormatter extends FormatterBase {
         );
       break;
       case 'comma':
-        // Render as one element as comma separated list.
-        $elements[0] = array(
+        // Render as one element, comma separated list.
+        $elements[] = array(
           '#theme' => 'textformatter_comma',
           '#items' => $list_items,
           '#settings' => $settings,
@@ -250,14 +257,12 @@ class ListFormatter extends FormatterBase {
    *   An array of info data.
    */
   static protected function fieldListInfo() {
-    $info = &drupal_static(__FUNCTION__);
-
-    if (empty($info)) {
-      $info = module_invoke_all('textformatter_field_info');
+    if (empty(self::$textformatterInfo)) {
+      self::$textformatterInfo = module_invoke_all('textformatter_field_info');
       drupal_alter('textformatter_field_info', $info);
     }
 
-    return $info;
+    return self::$textformatterInfo;
   }
 
   /**
