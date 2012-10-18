@@ -201,28 +201,6 @@ function textformatter_taxonomy_field_create_list($entity_type, $entity, $field,
 }
 
 /**
- * Returns an array of info to add to hook_field_formatter_info().
- *
- * @return array
- *   An array of fields and settings from hook_textformatter_field_info data.
- */
-function _textformatter_field_info() {
-  // Invokes hook_textformatter_field_info
-  $textformatter_info = textformatter_field_list_info();
-  $field_info = array('fields' => array(), 'settings' => array());
-
-  // Create array of all field types and default settings..
-  foreach ($textformatter_info as $module => $info) {
-    $field_info['fields'] = array_merge($field_info['fields'], $info['fields']);
-    if (isset($info['settings']) && is_array($info['settings'])) {
-      $field_info['settings'] = array_merge($field_info['settings'], $info['settings']);
-    }
-  }
-
-  return $field_info;
-}
-
-/**
  * Validate that a space-separated list of values are lowercase and appropriate
  * for use as HTML classes.
  *
