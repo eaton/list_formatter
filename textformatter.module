@@ -47,7 +47,7 @@ function textformatter_theme($existing, $type, $theme, $path) {
     'textformatter_comma' => array(
       'variables' => array(
         'items' => NULL,
-        'settings' => NULL,
+        'formatter' => NULL,
         'attributes' => NULL
       ),
     ),
@@ -193,23 +193,23 @@ function _textformatter_get_field_value_key(array $field) {
  */
 function theme_textformatter_comma($variables) {
   $items = $variables['items'];
-  $settings = $variables['settings'];
+  $formatter = $variables['formatter'];
   $attributes = new Attribute($variables['attributes']);
 
   // Optionally prefix the last item with 'and'.
   $last = '';
-  if ($settings['textformatter_comma_and'] && (count($items) > 1) && !$settings['textformatter_comma_override']) {
+  if ($formatter->getSetting('comma_and') && (count($items) > 1) && !$formatter->getSetting('comma_override')) {
     $last = ' ' . t('and') . ' ' . array_pop($items);
   }
 
   // Default comma separator.
   $separator = ', ';
   //Override if we need to.
-  if ($settings['textformatter_comma_override']) {
-    $sep = check_plain($settings['textformatter_separator_custom']);
-    $tag = $settings['textformatter_separator_custom_tag'];
+  if ($formatter->getSetting('comma_override')) {
+    $sep = check_plain($formatter->getSetting('separator_custom'));
+    $tag = $settings['separator_custom_tag'];
     if ($tag) {
-      $class = $settings['textformatter_separator_custom_class'];
+      $class = $formatter->getSetting('separator_custom_class');
       $separator = "<$tag class=\"$class\">$sep</$tag>";
     }
   }
@@ -217,12 +217,12 @@ function theme_textformatter_comma($variables) {
   $output = implode($separator, $items) . $last;
 
   // Optionally follow the list with a '.'.
-  if ($settings['textformatter_comma_full_stop']) {
+  if ($formatter->getSetting('comma_full_stop')) {
     $output .= '<span class="textformatter-fullstop">.</span>';
   }
 
   // Optionally wrap the list in an HTML tag.
-  $tag = $settings['textformatter_comma_tag'];
+  $tag = $formatter->getSetting('comma_tag');
   if ($tag) {
     $output = "<$tag$attributes>$output</$tag>";
   }

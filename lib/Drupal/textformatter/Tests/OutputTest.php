@@ -7,12 +7,10 @@
 
 namespace Drupal\textformatter\Tests;
 
-use Drupal\simpletest\WebTestBase;
-
 /**
  * Test the rendered output of list fields.
  */
-class OutputTest extends WebTestBase {
+class OutputTest extends TestBase {
 
   /**
    * Modules to enable.
@@ -27,56 +25,6 @@ class OutputTest extends WebTestBase {
       'description' => 'Tests the output markup of textformatter list formatters.',
       'group' => 'Textformatter',
     );
-  }
-
-  protected function setUp() {
-    parent::setUp();
-
-    $this->admin_user = $this->drupalCreateUser(array('bypass node access'));
-
-    $this->field_name = drupal_strtolower($this->randomName() . '_field_name');
-    $this->field = array('field_name' => $this->field_name, 'type' => 'text', 'cardinality' => -1);
-    $this->field = field_create_field($this->field);
-
-    $this->field_id = $this->field['id'];
-
-    $this->instance = array(
-      'field_name' => $this->field_name,
-      'entity_type' => 'node',
-      'bundle' => 'page',
-      'label' => $this->randomName() . '_label',
-      'description' => $this->randomName() . '_description',
-      'weight' => mt_rand(0, 127),
-      'settings' => array(
-        'max_length' => 255,
-      ),
-      'widget' => array(
-        'type' => 'text_textfield',
-        'label' => 'Test Field',
-      ),
-      'display' => array(
-        'default' => array(
-          'label' => 'above',
-          'module' => 'textformatter',
-          'settings' => array(
-            'textformatter_class' => 'textformatter-list',
-            'textformatter_comma_and' => 0,
-            'textformatter_comma_full_stop' => 0,
-            'textformatter_comma_override' => 0,
-            'textformatter_comma_tag' => 'div',
-            'textformatter_contrib' => array(),
-            'textformatter_separator_custom' => '',
-            'textformatter_separator_custom_class' => 'textformatter-separator',
-            'textformatter_separator_custom_tag' => 'span',
-            'textformatter_term_plain' => 0,
-            'textformatter_type' => 'ul',
-          ),
-          'type' => 'textformatter_list',
-          'weight' => '10',
-        ),
-      ),
-    );
-    field_create_instance($this->instance);
   }
 
   /**
@@ -117,13 +65,13 @@ class OutputTest extends WebTestBase {
         'class' => array('textformatter-list'),
       ),
     );
-    $ul = theme('item_list', $options);
+    $expected = theme('item_list', $options);
 
-    $this->assertRaw($ul, 'The expected unordered list markup was produced.');
+    $this->assertRaw($expected, 'The expected unordered list markup was produced.');
 
     // Update the field settings for ol list.
     $field_instance = field_info_instance('node', $this->field_name, $node->type);
-    $field_instance['display']['default']['settings']['textformatter_type'] = 'ol';
+    $field_instance['display']['default']['settings']['type'] = 'ol';
     field_update_instance($field_instance);
 
     // Get the node page again.
@@ -131,12 +79,12 @@ class OutputTest extends WebTestBase {
 
     // Test the default ol list.
     $options['type'] = 'ol';
-    $ol = theme('item_list', $options);
+    $expected = theme('item_list', $options);
 
-    $this->assertRaw($ol, 'The expected ordered list markup was produced.');
+    $this->assertRaw($expected, 'The expected ordered list markup was produced.');
 
     // Update the field settings for comma list.
-    $field_instance['display']['default']['settings']['textformatter_type'] = 'comma';
+    $field_instance['display']['default']['settings']['type'] = 'comma';
     field_update_instance($field_instance);
 
     // Get the node page again.
@@ -144,9 +92,11 @@ class OutputTest extends WebTestBase {
 
     // Test the default comma list.
     unset($options['type']);
-    $comma = theme('textformatter_comma', $options);
+    // Get the field formatter plugin to pass into the theme function.
+    $options['formatter'] = $field_instance->getFormatter('default');
+    $expected = theme('textformatter_comma', $options);
 
-    $this->assertRaw($comma, 'The expected comma list markup was produced.');
+    $this->assertRaw($expected, 'The expected comma list markup was produced.');
   }
 
 }

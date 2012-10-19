@@ -222,7 +222,7 @@ class ListFormatter extends FormatterBase {
 
     // CSS classes are checked for validity on submission. drupal_attributes()
     // runs each attribute value through check_plain().
-    $classes = explode(' ', $this->getSetting('textformatter_class'));
+    $classes = explode(' ', $this->getSetting('class'));
 
     switch ($type) {
       case 'ul':
@@ -242,7 +242,7 @@ class ListFormatter extends FormatterBase {
         $elements[] = array(
           '#theme' => 'textformatter_comma',
           '#items' => $list_items,
-          '#settings' => $settings,
+          '#formatter' => $this,
           '#attributes' => array(
             'class' => $classes,
           ),
