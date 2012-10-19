@@ -6,6 +6,7 @@
  */
 
 use Drupal\textformatter\Plugin\field\formatter\ListFormatter;
+use Drupal\Core\Template\Attribute;
 
 /**
  * Implements hook_help().
@@ -193,7 +194,7 @@ function _textformatter_get_field_value_key(array $field) {
 function theme_textformatter_comma($variables) {
   $items = $variables['items'];
   $settings = $variables['settings'];
-  $attributes = drupal_attributes($variables['attributes']);
+  $attributes = new Attribute($variables['attributes']);
 
   // Optionally prefix the last item with 'and'.
   $last = '';

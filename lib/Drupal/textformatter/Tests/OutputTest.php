@@ -85,9 +85,9 @@ class OutputTest extends WebTestBase {
   public function testOutput() {
     $this->drupalLogin($this->admin_user);
 
-    $field_values = array(LANGUAGE_NONE => array());
+    $field_values = array(LANGUAGE_NOT_SPECIFIED => array());
     for ($i = 0; $i < 10; $i++) {
-      $field_values[LANGUAGE_NONE][] = array('value' => $this->randomName());
+      $field_values[LANGUAGE_NOT_SPECIFIED][] = array('value' => $this->randomName());
     }
 
     $node = $this->drupalCreateNode(array($this->field_name => $field_values));
@@ -100,12 +100,12 @@ class OutputTest extends WebTestBase {
     $this->drupalSetContent($page);
     $this->assertResponse(200);
 
-    foreach ($field_values[LANGUAGE_NONE] as $delta => $item) {
+    foreach ($field_values[LANGUAGE_NOT_SPECIFIED] as $delta => $item) {
       $this->assertText($item['value'], t('Field value !delta output on node.', array('!delta' => $delta)));
     }
 
     $items = array();
-    foreach ($field_values[LANGUAGE_NONE] as $item) {
+    foreach ($field_values[LANGUAGE_NOT_SPECIFIED] as $item) {
       $items[] = $item['value'];
     }
 
