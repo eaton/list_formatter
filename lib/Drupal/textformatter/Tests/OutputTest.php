@@ -2,20 +2,35 @@
 
 /**
  * @file
- * Tests for the textformatter module.
+ * Definition of Drupal\textformatter\Tests\OutputTest.
  */
 
-class TextformatterTestCase extends DrupalWebTestCase {
+namespace Drupal\textformatter\Tests;
+
+use Drupal\simpletest\WebTestBase;
+
+/**
+ * Test the rendered output of list fields.
+ */
+class OutputTest extends WebTestBase {
+
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = array('textformatter');
+
   public static function getInfo() {
     return array(
-      'name' => 'Textformatter tests',
-      'description' => 'Tests textformatter module functionality',
+      'name' => 'Test list output',
+      'description' => 'Tests the output markup of textformatter list formatters.',
       'group' => 'Textformatter',
     );
   }
 
   protected function setUp() {
-    parent::setUp(array('textformatter'));
+    parent::setUp();
 
     $this->admin_user = $this->drupalCreateUser(array('bypass node access'));
 
@@ -67,7 +82,7 @@ class TextformatterTestCase extends DrupalWebTestCase {
   /**
    * Test the general output of the display formatter.
    */
-  public function testFormatterOutput() {
+  public function testOutput() {
     $this->drupalLogin($this->admin_user);
 
     $field_values = array(LANGUAGE_NONE => array());
