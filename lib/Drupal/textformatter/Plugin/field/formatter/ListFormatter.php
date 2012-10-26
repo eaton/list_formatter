@@ -152,10 +152,10 @@ class ListFormatter extends FormatterBase {
 
     // Taxonomy term ref fields only.
     if ($this->field['type'] == 'taxonomy_term_reference') {
-      $elements['textformatter_term_plain'] = array(
+      $elements['term_plain'] = array(
         '#type' => 'checkbox',
         '#title' => t("Display taxonomy terms as plain text (Not term links)."),
-        '#default_value' => $settings['textformatter_term_plain'],
+        '#default_value' => $this->getSetting('term_plain'),
       );
     }
 
@@ -201,7 +201,14 @@ class ListFormatter extends FormatterBase {
     if (!empty($textformatter_info[$module]['callback']) && in_array($field_type, $textformatter_info[$module]['fields'])) {
       $function = $textformatter_info[$module]['callback'];
       if (function_exists($function)) {
-        $list_items = $function($entity->entityType(), $entity, $this->field, $this->instance, $langcode, $items);
+        // Support existing function implementations.
+        $display = array(
+          'type' => $this->getPluginId(),
+          'settings' => $this->getSettings(),
+          'weight' => $this->weight,
+          'label' => $this->label,
+        );
+        $list_items = $function($entity->entityType(), $entity, $this->field, $this->instance, $langcode, $items, $display);
       }
       else {
         drupal_set_message(t('function @function does not exist.', array('@function' => $function)), 'error');

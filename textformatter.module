@@ -82,8 +82,8 @@ function textformatter_textformatter_field_info() {
 /**
  * Create list for text fields.
  */
-function textformatter_text_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items) {
-  $settings = $instance['settings'];
+function textformatter_text_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $settings = $display['settings'];
   $list_items = array();
 
   if ($field['type'] == 'text_long') {
@@ -108,7 +108,7 @@ function textformatter_text_field_create_list($entity_type, $entity, $field, $in
 /**
  * Create list for list fields.
  */
-function textformatter_list_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items) {
+function textformatter_list_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $settings = $display['settings'];
   $list_items = array();
 
@@ -126,7 +126,7 @@ function textformatter_list_field_create_list($entity_type, $entity, $field, $in
 /**
  * Create list for taxonomy reference fields.
  */
-function textformatter_taxonomy_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items) {
+function textformatter_taxonomy_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $settings = $display['settings'];
   $list_items = $tids = array();
 
@@ -146,11 +146,11 @@ function textformatter_taxonomy_field_create_list($entity_type, $entity, $field,
     // Use the item name if autocreating, as there won't be a term object yet.
     $term_name = ($item['tid'] === 'autocreate') ? $item['name'] : $terms[$item['tid']]->name;
     // Check if we should display as term links or not.
-    if ($settings['textformatter_term_plain'] || ($item['tid'] === 'autocreate')) {
+    if ($settings['term_plain'] || ($item['tid'] === 'autocreate')) {
       $list_items[$delta] = check_plain($term_name);
     }
     else {
-      $uri = entity_uri('taxonomy_term', $terms[$item['tid']]);
+      $uri = $terms[$item['tid']]->uri();
       $list_items[$delta] = l($term_name, $uri['path']);
     }
   }
