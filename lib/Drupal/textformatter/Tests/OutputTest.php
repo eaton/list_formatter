@@ -12,13 +12,6 @@ namespace Drupal\textformatter\Tests;
  */
 class OutputTest extends TestBase {
 
-  /**
-   * Modules to enable.
-   *
-   * @var array
-   */
-  public static $modules = array('textformatter');
-
   public static function getInfo() {
     return array(
       'name' => 'Test list output',
@@ -31,14 +24,14 @@ class OutputTest extends TestBase {
    * Test the general output of the display formatter.
    */
   public function testOutput() {
-    $this->drupalLogin($this->admin_user);
+    $this->drupalLogin($this->adminUser);
 
     $field_values = array(LANGUAGE_NOT_SPECIFIED => array());
     for ($i = 0; $i < 10; $i++) {
       $field_values[LANGUAGE_NOT_SPECIFIED][] = array('value' => $this->randomName());
     }
 
-    $node = $this->drupalCreateNode(array($this->field_name => $field_values));
+    $node = $this->drupalCreateNode(array($this->fieldName => $field_values, 'type' => $this->contentType->type));
     $this->verbose('Node: ' . var_export($node, TRUE));
 
     $page = $this->drupalGet('node/' . $node->nid);
@@ -70,7 +63,7 @@ class OutputTest extends TestBase {
     $this->assertRaw($expected, 'The expected unordered list markup was produced.');
 
     // Update the field settings for ol list.
-    $field_instance = field_info_instance('node', $this->field_name, $node->type);
+    $field_instance = field_info_instance('node', $this->fieldName, $node->type);
     $field_instance['display']['default']['settings']['type'] = 'ol';
     field_update_instance($field_instance);
 

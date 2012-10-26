@@ -10,7 +10,7 @@ namespace Drupal\textformatter\Tests;
 use Drupal\simpletest\WebTestBase;
 
 /**
- * Test the rendered output of list fields.
+ * Test base class for textformatter tests.
  */
 abstract class TestBase extends WebTestBase {
 
@@ -19,23 +19,25 @@ abstract class TestBase extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('textformatter');
+  public static $modules = array('textformatter', 'node', 'field', 'field_ui');
 
   protected function setUp() {
     parent::setUp();
 
-    $this->admin_user = $this->drupalCreateUser(array('bypass node access'));
+    $this->adminUser = $this->drupalCreateUser(array('bypass node access', 'administer content types', 'administer nodes'));
 
-    $this->field_name = drupal_strtolower($this->randomName() . '_field_name');
-    $this->field = array('field_name' => $this->field_name, 'type' => 'text', 'cardinality' => -1);
+    $this->contentType = $this->drupalCreateContentType();
+
+    $this->fieldName = drupal_strtolower($this->randomName() . '_field_name');
+    $this->field = array('field_name' => $this->fieldName, 'type' => 'text', 'cardinality' => -1);
     $this->field = field_create_field($this->field);
 
-    $this->field_id = $this->field['id'];
+    $this->fieldID = $this->field['id'];
 
     $this->instance = array(
-      'field_name' => $this->field_name,
+      'field_name' => $this->fieldName,
       'entity_type' => 'node',
-      'bundle' => 'page',
+      'bundle' => $this->contentType->type,
       'label' => $this->randomName() . '_label',
       'description' => $this->randomName() . '_description',
       'weight' => mt_rand(0, 127),
