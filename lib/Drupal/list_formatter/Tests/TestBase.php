@@ -48,29 +48,31 @@ abstract class TestBase extends WebTestBase {
         'type' => 'text_textfield',
         'label' => 'Test Field',
       ),
-      'display' => array(
-        'default' => array(
-          'label' => 'above',
-          'module' => 'list_formatter',
-          'settings' => array(
-            'class' => 'list-formatter-list',
-            'comma_and' => 0,
-            'comma_full_stop' => 0,
-            'comma_override' => 0,
-            'comma_tag' => 'div',
-            'contrib' => array(),
-            'separator_custom' => '',
-            'separator_custom_class' => 'list-formatter-separator',
-            'separator_custom_tag' => 'span',
-            'term_plain' => 0,
-            'type' => 'ul',
-          ),
-          'type' => 'list_formatter',
-          'weight' => '10',
-        ),
-      ),
     );
     field_create_instance($this->instance);
+
+    $display = array(
+      'label' => 'above',
+      'module' => 'list_formatter',
+      'settings' => array(
+        'class' => 'list-formatter-list',
+        'comma_and' => 0,
+        'comma_full_stop' => 0,
+        'comma_override' => 0,
+        'comma_tag' => 'div',
+        'contrib' => array(),
+        'separator_custom' => '',
+        'separator_custom_class' => 'list-formatter-separator',
+        'separator_custom_tag' => 'span',
+        'term_plain' => 0,
+        'type' => 'ul',
+      ),
+      'type' => 'list_formatter',
+      'weight' => '10',
+    );
+
+    entity_get_display('node', $this->contentType->type, 'default')
+      ->setComponent($this->fieldName, $display)->save();
   }
 
 }

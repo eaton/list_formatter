@@ -205,7 +205,6 @@ class ListFormatter extends FormatterBase {
         $display = array(
           'type' => $this->getPluginId(),
           'settings' => $this->getSettings(),
-          'weight' => $this->weight,
           'label' => $this->label,
         );
         $list_items = $function($entity->entityType(), $entity, $this->field, $this->instance, $langcode, $items, $display);

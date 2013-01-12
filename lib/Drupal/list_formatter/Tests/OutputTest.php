@@ -63,9 +63,10 @@ class OutputTest extends TestBase {
     $this->assertRaw($expected, 'The expected unordered list markup was produced.');
 
     // Update the field settings for ol list.
-    $field_instance = field_info_instance('node', $this->fieldName, $node->type);
-    $field_instance['display']['default']['settings']['type'] = 'ol';
-    field_update_instance($field_instance);
+    $display = entity_get_display('node', $this->contentType->type, 'default');
+    $field = $display->getComponent($this->fieldName);
+    $field['settings']['type'] = 'ol';
+    $display->setComponent($this->fieldName, $field)->save();
 
     // Get the node page again.
     $this->drupalGet('node/' . $node->nid);
@@ -77,8 +78,9 @@ class OutputTest extends TestBase {
     $this->assertRaw($expected, 'The expected ordered list markup was produced.');
 
     // Update the field settings for comma list.
-    $field_instance['display']['default']['settings']['type'] = 'comma';
-    field_update_instance($field_instance);
+    $field = $display->getComponent($this->fieldName);
+    $field['settings']['type'] = 'comma';
+    $display->setComponent($this->fieldName, $field)->save();
 
     // Get the node page again.
     $this->drupalGet('node/' . $node->nid);
@@ -86,7 +88,8 @@ class OutputTest extends TestBase {
     // Test the default comma list.
     unset($options['type']);
     // Get the field formatter plugin to pass into the theme function.
-    $options['formatter'] = $field_instance->getFormatter('default');
+    $options['formatter'] = entity_get_display('node', $this->contentType->type, 'default')->getFormatter($this->fieldName);
+
     $expected = theme('list_formatter_comma', $options);
 
     $this->assertRaw($expected, 'The expected comma list markup was produced.');

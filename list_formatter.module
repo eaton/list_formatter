@@ -7,6 +7,7 @@
 
 use Drupal\list_formatter\Plugin\field\formatter\ListFormatter;
 use Drupal\Core\Template\Attribute;
+use Drupal\Component\Utility\NestedArray;
 
 /**
  * Implements hook_help().
@@ -165,7 +166,7 @@ function list_formatter_taxonomy_field_create_list($entity_type, $entity, $field
  * @see list_formatter_field_formatter_settings_form()
  */
 function _list_formatter_validate_class($element, &$form_state) {
-  $value = drupal_array_get_nested_value($form_state['values'], $element['#parents']);
+  $value = NestedArray::getValue($form_state['values'], $element['#parents']);
   $classes = explode(' ', $value);
   foreach ($classes as $class) {
     if ($class != drupal_html_class($class)) {
