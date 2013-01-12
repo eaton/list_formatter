@@ -11,6 +11,7 @@ use Drupal\Core\Annotation\Plugin;
 use Drupal\Core\Annotation\Translation;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\field\Plugin\Type\Formatter\FormatterBase;
+use Drupal\list_formatter\Plugin\ListFormatterPluginManager;
 
 /**
  * Plugin implementation of the 'text_default' formatter.
@@ -36,13 +37,6 @@ use Drupal\field\Plugin\Type\Formatter\FormatterBase;
  * )
  */
 class ListFormatter extends FormatterBase {
-
-  /**
-   * Stores the list_formatter info collected from hook_list_formatter_field_info().
-   *
-   * @var array
-   */
-  static protected $list_formatterInfo = array();
 
   /**
    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::settingsForm().
@@ -260,21 +254,6 @@ class ListFormatter extends FormatterBase {
   }
 
   /**
-   * Returns an array of info data, invoking hook_list_formatter_field_info().
-   *
-   * @return array
-   *   An array of info data.
-   */
-  static protected function fieldListInfo() {
-    if (empty(self::$list_formatterInfo)) {
-      self::$list_formatterInfo = module_invoke_all('list_formatter_field_info');
-      drupal_alter('list_formatter_field_info', $info);
-    }
-
-    return self::$list_formatterInfo;
-  }
-
-  /**
    * Returns an array of info to add to hook_field_formatter_info_alter().
    *
    * This iterates through each item returned from fieldListInfo.
@@ -284,18 +263,13 @@ class ListFormatter extends FormatterBase {
    *   implementations. Containing an aggregated array from all items.
    */
   static public function prepareFieldListInfo() {
-    $list_formatter_info = self::fieldListInfo();
-    $field_info = array('fields' => array(), 'settings' => array());
-
+    $manager = new ListFormatterPluginManager();
+    $field_info = array('field_types' => array(), 'settings' => array());
+dpm($manager->getDefinitions());
     // Create array of all field types and default settings.
-    foreach ($list_formatter_info as $module => $info) {
-      $info += array(
-        'fields' => array(),
-        'settings' => array(),
-      );
-
-      $field_info['fields'] = array_merge($field_info['fields'], $info['fields']);
-      $field_info['settings'] = array_merge($field_info['settings'], $info['settings']);
+    foreach ($manager->getDefinitions() as $id => $definition) {
+      $field_info['field_types'] = array_merge($field_info['field_types'], $definition['field_types']);
+      $field_info['settings'] = array_merge($field_info['settings'], $definition['settings']);
     }
 
     return $field_info;

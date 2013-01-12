@@ -35,9 +35,9 @@ function list_formatter_help($path, $arg) {
  */
 function list_formatter_field_formatter_info_alter(&$info) {
   $list_formatter_info = ListFormatter::prepareFieldListInfo();
-
-  $info['list_formatter']['field_types'] = $list_formatter_info['fields'];
+  $info['list_formatter']['field_types'] = $list_formatter_info['field_types'];
   $info['list_formatter']['settings']['contrib'] = $list_formatter_info['settings'];
+  dpm($info);
 }
 
 /**
@@ -53,110 +53,6 @@ function list_formatter_theme($existing, $type, $theme, $path) {
       ),
     ),
   );
-}
-
-/**
- * Implements hook_list_formatter_field_info().
- */
-function list_formatter_list_formatter_field_info() {
-  $info = array();
-
-  $info['text'] = array(
-    'fields' => array('text', 'text_long', 'text_with_summary'),
-    'callback' => 'list_formatter_text_field_create_list',
-  );
-  $info['number'] = array(
-    'fields' => array('number_integer', 'number_decimal', 'number_float'),
-  );
-  $info['list'] = array(
-    'fields' => array('list_float', 'list_integer', 'list_text'),
-    'callback' => 'list_formatter_list_field_create_list',
-  );
-  $info['taxonomy'] = array(
-    'fields' => array('taxonomy_term_reference'),
-    'callback' => 'list_formatter_taxonomy_field_create_list',
-  );
-
-  return $info;
-}
-
-/**
- * Create list for text fields.
- */
-function list_formatter_text_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-  $settings = $display['settings'];
-  $list_items = array();
-
-  if ($field['type'] == 'text_long') {
-    foreach ($items as $delta => $item) {
-      // Explode on new line char, trim whitespace (if any), then array filter (So any empty lines will actually be removed).
-      $long_text_items = array_filter(array_map('trim', explode("\n", $item['value'])));
-      foreach ($long_text_items as $long_text_item) {
-        // @see _text_sanitize(), text.module
-        $list_items[] = ($instance['settings']['text_processing'] ? check_markup($long_text_item, $item['format'], $langcode) : field_filter_xss($long_text_item));
-      }
-    }
-  }
-  else {
-    foreach ($items as $delta => $item) {
-      $list_items[] = ($instance['settings']['text_processing'] ? check_markup($item['value'], $item['format'], $langcode) : field_filter_xss($item['value']));
-    }
-  }
-
-  return $list_items;
-}
-
-/**
- * Create list for list fields.
- */
-function list_formatter_list_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-  $settings = $display['settings'];
-  $list_items = array();
-
-  // Get allowed values for the field.
-  $allowed_values = list_allowed_values($field);
-  foreach ($items as $delta => $item) {
-    if (isset($allowed_values[$item['value']])) {
-      $list_items[$delta] = field_filter_xss($allowed_values[$item['value']]);
-    }
-  }
-
-  return $list_items;
-}
-
-/**
- * Create list for taxonomy reference fields.
- */
-function list_formatter_taxonomy_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-  $settings = $display['settings'];
-  $list_items = $tids = array();
-
-  // Get an array of tids only.
-  foreach ($items as $item) {
-    $tids[] = $item['tid'];
-  }
-
-  $terms = taxonomy_term_load_multiple($tids);
-
-  foreach ($items as $delta => $item) {
-    // Check the term for this item has actually been loaded.
-    // @see http://drupal.org/node/1281114
-    if (empty($terms[$item['tid']])) {
-      continue;
-    }
-    // Use the item name if autocreating, as there won't be a term object yet.
-    $term_name = ($item['tid'] === 'autocreate') ? $item['name'] : $terms[$item['tid']]->name;
-    // Check if we should display as term links or not.
-    if ($settings['term_plain'] || ($item['tid'] === 'autocreate')) {
-      $list_items[$delta] = check_plain($term_name);
-    }
-    else {
-      $uri = $terms[$item['tid']]->uri();
-      $list_items[$delta] = l($term_name, $uri['path']);
-    }
-  }
-
-  return $list_items;
 }
 
 /**
