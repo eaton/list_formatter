@@ -2,6 +2,7 @@
 
 /**
  * @file
+ * Contains \...
  */
 
 namespace Drupal\list_formatter\Plugin\list_formatter\type;

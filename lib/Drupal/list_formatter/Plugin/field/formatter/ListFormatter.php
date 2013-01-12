@@ -265,7 +265,7 @@ class ListFormatter extends FormatterBase {
   static public function prepareFieldListInfo() {
     $manager = new ListFormatterPluginManager();
     $field_info = array('field_types' => array(), 'settings' => array());
-dpm($manager->getDefinitions());
+
     // Create array of all field types and default settings.
     foreach ($manager->getDefinitions() as $id => $definition) {
       $field_info['field_types'] = array_merge($field_info['field_types'], $definition['field_types']);
@@ -273,22 +273,6 @@ dpm($manager->getDefinitions());
     }
 
     return $field_info;
-  }
-
-  /**
-   * Default listing callback.
-   */
-  public function defaultFieldList(EntityInterface $entity, $langcode, array $items) {
-    $list_items = array();
-
-    // Use our helper function to get the value key dynamically.
-    $value_key = _list_formatter_get_field_value_key($this->field);
-
-    foreach ($items as $delta => $item) {
-      $list_items[$delta] = check_plain($item[$value_key]);
-    }
-
-    return $list_items;
   }
 
   /**

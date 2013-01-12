@@ -25,10 +25,9 @@ class ListFormatterPluginManager extends PluginManagerBase {
    */
   public function __construct() {
     $this->discovery = new AnnotatedClassDiscovery('list_formatter', 'type');
-    $this->discovery = new DerivativeDiscoveryDecorator($this->discovery);
     $this->discovery = new ProcessDecorator($this->discovery, array($this, 'processDefinition'));
     $this->discovery = new AlterDecorator($this->discovery, 'list_formatter_list_plugins');
-    //$this->discovery = new CacheDecorator($this->discovery, 'list_formatter:list_plugins', 'cache');
+    $this->discovery = new CacheDecorator($this->discovery, 'list_formatter:list_plugins', 'cache');
 
     $this->factory = new DefaultFactory($this);
 
