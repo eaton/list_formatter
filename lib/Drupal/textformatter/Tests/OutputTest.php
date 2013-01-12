@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Definition of Drupal\textformatter\Tests\OutputTest.
+ * Definition of Drupal\list_formatter\Tests\OutputTest.
  */
 
-namespace Drupal\textformatter\Tests;
+namespace Drupal\list_formatter\Tests;
 
 /**
  * Test the rendered output of list fields.
@@ -15,8 +15,8 @@ class OutputTest extends TestBase {
   public static function getInfo() {
     return array(
       'name' => 'Test list output',
-      'description' => 'Tests the output markup of textformatter list formatters.',
-      'group' => 'Textformatter',
+      'description' => 'Tests the output markup of list_formatter list formatters.',
+      'group' => 'List formatter',
     );
   }
 
@@ -55,7 +55,7 @@ class OutputTest extends TestBase {
       'type' => 'ul',
       'items' => $items,
       'attributes' => array(
-        'class' => array('textformatter-list'),
+        'class' => array('list_formatter-list'),
       ),
     );
     $expected = theme('item_list', $options);
@@ -87,7 +87,7 @@ class OutputTest extends TestBase {
     unset($options['type']);
     // Get the field formatter plugin to pass into the theme function.
     $options['formatter'] = $field_instance->getFormatter('default');
-    $expected = theme('textformatter_comma', $options);
+    $expected = theme('list_formatter_comma', $options);
 
     $this->assertRaw($expected, 'The expected comma list markup was produced.');
   }

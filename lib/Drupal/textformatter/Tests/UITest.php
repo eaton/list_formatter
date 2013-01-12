@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Definition of Drupal\textformatter\Tests\UITest.
+ * Definition of Drupal\list_formatter\Tests\UITest.
  */
 
-namespace Drupal\textformatter\Tests;
+namespace Drupal\list_formatter\Tests;
 
 /**
  * Test the UI settings form for list fields.
@@ -16,7 +16,7 @@ class UITest extends TestBase {
     return array(
       'name' => 'Test list UI',
       'description' => 'Tests the  settings in the UI for list formatters.',
-      'group' => 'Textformatter',
+      'group' => 'List formatter',
     );
   }
 
@@ -30,7 +30,7 @@ class UITest extends TestBase {
     $this->assertResponse(200);
 
     $this->assertText('Unordered HTML list (ul)');
-    $this->assertText('CSS Class: textformatter-list');
+    $this->assertText('CSS Class: list_formatter-list');
   }
 
 }

@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Definition of Drupal\textformatter\Plugin\field\formatter\List;
+ * Definition of Drupal\list_formatter\Plugin\field\formatter\List;
  */
 
-namespace Drupal\textformatter\Plugin\field\formatter;
+namespace Drupal\list_formatter\Plugin\field\formatter;
 
 use Drupal\Core\Annotation\Plugin;
 use Drupal\Core\Annotation\Translation;
@@ -17,12 +17,12 @@ use Drupal\field\Plugin\Type\Formatter\FormatterBase;
  *
  * @Plugin(
  *   id = "list_formatter",
- *   module = "textformatter",
+ *   module = "list_formatter",
  *   label = @Translation("List"),
  *   field_types = "",
  *   settings = {
  *     "type" = "ul",
- *     "class" = "textformatter-list",
+ *     "class" = "list-formatter-list",
  *     "comma_full_stop" = 0,
  *     "comma_and" = 0,
  *     "comma_tag" = "div",
@@ -30,7 +30,7 @@ use Drupal\field\Plugin\Type\Formatter\FormatterBase;
  *     "comma_override" = 0,
  *     "separator_custom" = "",
  *     "separator_custom_tag" = "span",
- *     "separator_custom_class" = "textformatter-separator",
+ *     "separator_custom_class" = "list-formatter-separator",
  *     "contrib" = ""
  *    }
  * )
@@ -38,11 +38,11 @@ use Drupal\field\Plugin\Type\Formatter\FormatterBase;
 class ListFormatter extends FormatterBase {
 
   /**
-   * Stores the textformatter info collected from hook_textformatter_field_info().
+   * Stores the list_formatter info collected from hook_list_formatter_field_info().
    *
    * @var array
    */
-  static protected $textformatterInfo = array();
+  static protected $list_formatterInfo = array();
 
   /**
    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::settingsForm().
@@ -121,7 +121,7 @@ class ListFormatter extends FormatterBase {
       '#type' => 'textfield',
       '#description' => t("A CSS class to use in the wrapper tag for the separator."),
       '#default_value' => $this->getSetting('separator_custom_class'),
-      '#element_validate' => array('_textformatter_validate_class'),
+      '#element_validate' => array('_list_formatter_validate_class'),
       '#states' => array(
         'visible' => array(
           ':input[name="fields[' . $field_name . '][settings_edit_form][settings][comma_override]"]' => array('checked' => TRUE),
@@ -147,7 +147,7 @@ class ListFormatter extends FormatterBase {
       '#size' => 40,
       '#description' => t("A CSS class to use in the markup for the field list."),
       '#default_value' => $this->getSetting('class'),
-      '#element_validate' => array('_textformatter_validate_class'),
+      '#element_validate' => array('_list_formatter_validate_class'),
     );
 
     // Taxonomy term ref fields only.
@@ -164,7 +164,7 @@ class ListFormatter extends FormatterBase {
       'instance' => $this->instance,
       'view_mode' => $this->viewMode,
     );
-    drupal_alter('textformatter_field_formatter_settings_form', $form, $form_state, $context);
+    drupal_alter('list_formatter_field_formatter_settings_form', $form, $form_state, $context);
 
     return $elements;
   }
@@ -195,11 +195,11 @@ class ListFormatter extends FormatterBase {
   public function viewElements(EntityInterface $entity, $langcode, array $items) {
     $module = $this->field['module'];
     $field_type = $this->field['type'];
-    $textformatter_info = $this->fieldListInfo();
+    $list_formatter_info = $this->fieldListInfo();
     $elements = $list_items = array();
 
-    if (!empty($textformatter_info[$module]['callback']) && in_array($field_type, $textformatter_info[$module]['fields'])) {
-      $function = $textformatter_info[$module]['callback'];
+    if (!empty($list_formatter_info[$module]['callback']) && in_array($field_type, $list_formatter_info[$module]['fields'])) {
+      $function = $list_formatter_info[$module]['callback'];
       if (function_exists($function)) {
         // Support existing function implementations.
         $display = array(
@@ -247,7 +247,7 @@ class ListFormatter extends FormatterBase {
       case 'comma':
         // Render as one element, comma separated list.
         $elements[] = array(
-          '#theme' => 'textformatter_comma',
+          '#theme' => 'list_formatter_comma',
           '#items' => $list_items,
           '#formatter' => $this,
           '#attributes' => array(
@@ -261,18 +261,18 @@ class ListFormatter extends FormatterBase {
   }
 
   /**
-   * Returns an array of info data, invoking hook_textformatter_field_info().
+   * Returns an array of info data, invoking hook_list_formatter_field_info().
    *
    * @return array
    *   An array of info data.
    */
   static protected function fieldListInfo() {
-    if (empty(self::$textformatterInfo)) {
-      self::$textformatterInfo = module_invoke_all('textformatter_field_info');
-      drupal_alter('textformatter_field_info', $info);
+    if (empty(self::$list_formatterInfo)) {
+      self::$list_formatterInfo = module_invoke_all('list_formatter_field_info');
+      drupal_alter('list_formatter_field_info', $info);
     }
 
-    return self::$textformatterInfo;
+    return self::$list_formatterInfo;
   }
 
   /**
@@ -281,15 +281,15 @@ class ListFormatter extends FormatterBase {
    * This iterates through each item returned from fieldListInfo.
    *
    * @return array
-   *   An array of fields and settings from hook_textformatter_field_info data
+   *   An array of fields and settings from hook_list_formatter_field_info data
    *   implementations. Containing an aggregated array from all items.
    */
   static public function prepareFieldListInfo() {
-    $textformatter_info = self::fieldListInfo();
+    $list_formatter_info = self::fieldListInfo();
     $field_info = array('fields' => array(), 'settings' => array());
 
     // Create array of all field types and default settings.
-    foreach ($textformatter_info as $module => $info) {
+    foreach ($list_formatter_info as $module => $info) {
       $info += array(
         'fields' => array(),
         'settings' => array(),
@@ -309,7 +309,7 @@ class ListFormatter extends FormatterBase {
     $list_items = array();
 
     // Use our helper function to get the value key dynamically.
-    $value_key = _textformatter_get_field_value_key($this->field);
+    $value_key = _list_formatter_get_field_value_key($this->field);
 
     foreach ($items as $delta => $item) {
       $list_items[$delta] = check_plain($item[$value_key]);

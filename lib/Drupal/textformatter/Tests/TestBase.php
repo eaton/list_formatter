@@ -2,15 +2,15 @@
 
 /**
  * @file
- * Definition of Drupal\textformatter\Tests\TestBase.
+ * Definition of Drupal\list_formatter\Tests\TestBase.
  */
 
-namespace Drupal\textformatter\Tests;
+namespace Drupal\list_formatter\Tests;
 
 use Drupal\simpletest\WebTestBase;
 
 /**
- * Test base class for textformatter tests.
+ * Test base class for list_formatter tests.
  */
 abstract class TestBase extends WebTestBase {
 
@@ -19,7 +19,7 @@ abstract class TestBase extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('textformatter', 'node', 'field', 'field_ui');
+  public static $modules = array('list_formatter', 'node', 'field', 'field_ui');
 
   protected function setUp() {
     parent::setUp();
@@ -51,16 +51,16 @@ abstract class TestBase extends WebTestBase {
       'display' => array(
         'default' => array(
           'label' => 'above',
-          'module' => 'textformatter',
+          'module' => 'list_formatter',
           'settings' => array(
-            'class' => 'textformatter-list',
+            'class' => 'list-formatter-list',
             'comma_and' => 0,
             'comma_full_stop' => 0,
             'comma_override' => 0,
             'comma_tag' => 'div',
             'contrib' => array(),
             'separator_custom' => '',
-            'separator_custom_class' => 'textformatter-separator',
+            'separator_custom_class' => 'list-formatter-separator',
             'separator_custom_tag' => 'span',
             'term_plain' => 0,
             'type' => 'ul',

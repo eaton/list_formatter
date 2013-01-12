@@ -6,9 +6,9 @@ core fields as HTML or comma-separated lists.
 For multi-value fields, each field value becomes a list item. For long text
 fields, each line becomes a list item.
 
-Textformatter also provides hooks (see textformatter.api.php) so that other
+List formatter also provides hooks (see list_formatter.api.php) so that other
 modules can register and implement listings for their field data. The
-textformatter_contrib module provides some implementations. This is bundled
+list_formatter_contrib module provides some implementations. This is bundled
 with this module. Currently entityreference, node reference, and link fields
 are supported.
 

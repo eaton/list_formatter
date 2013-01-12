@@ -5,15 +5,15 @@
  * Provide a field formatter to render values as HTML or comma-separated lists.
  */
 
-use Drupal\textformatter\Plugin\field\formatter\ListFormatter;
+use Drupal\list_formatter\Plugin\field\formatter\ListFormatter;
 use Drupal\Core\Template\Attribute;
 
 /**
  * Implements hook_help().
  */
-function textformatter_help($path, $arg) {
+function list_formatter_help($path, $arg) {
   switch ($path) {
-    case 'admin/help#textformatter' :
+    case 'admin/help#list_formatter' :
       $output =  '<p>' . t("The text formatter module provides a new display formatter that can
         be used on any text, number, list, or taxonomy fields.") . '</p>';
       $output .= '<p>' . t("Go to 'Manage display' for your entity field display settings and
@@ -32,19 +32,19 @@ function textformatter_help($path, $arg) {
 /**
  * Implements hook_field_formatter_info_alter().
  */
-function textformatter_field_formatter_info_alter(&$info) {
-  $textformatter_info = ListFormatter::prepareFieldListInfo();
+function list_formatter_field_formatter_info_alter(&$info) {
+  $list_formatter_info = ListFormatter::prepareFieldListInfo();
 
-  $info['list_formatter']['field_types'] = $textformatter_info['fields'];
-  $info['list_formatter']['settings']['contrib'] = $textformatter_info['settings'];
+  $info['list_formatter']['field_types'] = $list_formatter_info['fields'];
+  $info['list_formatter']['settings']['contrib'] = $list_formatter_info['settings'];
 }
 
 /**
  * Implements hook_theme().
  */
-function textformatter_theme($existing, $type, $theme, $path) {
+function list_formatter_theme($existing, $type, $theme, $path) {
   return array(
-    'textformatter_comma' => array(
+    'list_formatter_comma' => array(
       'variables' => array(
         'items' => NULL,
         'formatter' => NULL,
@@ -55,25 +55,25 @@ function textformatter_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * Implements hook_textformatter_field_info().
+ * Implements hook_list_formatter_field_info().
  */
-function textformatter_textformatter_field_info() {
+function list_formatter_list_formatter_field_info() {
   $info = array();
 
   $info['text'] = array(
     'fields' => array('text', 'text_long', 'text_with_summary'),
-    'callback' => 'textformatter_text_field_create_list',
+    'callback' => 'list_formatter_text_field_create_list',
   );
   $info['number'] = array(
     'fields' => array('number_integer', 'number_decimal', 'number_float'),
   );
   $info['list'] = array(
     'fields' => array('list_float', 'list_integer', 'list_text'),
-    'callback' => 'textformatter_list_field_create_list',
+    'callback' => 'list_formatter_list_field_create_list',
   );
   $info['taxonomy'] = array(
     'fields' => array('taxonomy_term_reference'),
-    'callback' => 'textformatter_taxonomy_field_create_list',
+    'callback' => 'list_formatter_taxonomy_field_create_list',
   );
 
   return $info;
@@ -82,7 +82,7 @@ function textformatter_textformatter_field_info() {
 /**
  * Create list for text fields.
  */
-function textformatter_text_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+function list_formatter_text_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $settings = $display['settings'];
   $list_items = array();
 
@@ -108,7 +108,7 @@ function textformatter_text_field_create_list($entity_type, $entity, $field, $in
 /**
  * Create list for list fields.
  */
-function textformatter_list_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+function list_formatter_list_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $settings = $display['settings'];
   $list_items = array();
 
@@ -126,7 +126,7 @@ function textformatter_list_field_create_list($entity_type, $entity, $field, $in
 /**
  * Create list for taxonomy reference fields.
  */
-function textformatter_taxonomy_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+function list_formatter_taxonomy_field_create_list($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $settings = $display['settings'];
   $list_items = $tids = array();
 
@@ -162,9 +162,9 @@ function textformatter_taxonomy_field_create_list($entity_type, $entity, $field,
  * Validate that a space-separated list of values are lowercase and appropriate
  * for use as HTML classes.
  *
- * @see textformatter_field_formatter_settings_form()
+ * @see list_formatter_field_formatter_settings_form()
  */
-function _textformatter_validate_class($element, &$form_state) {
+function _list_formatter_validate_class($element, &$form_state) {
   $value = drupal_array_get_nested_value($form_state['values'], $element['#parents']);
   $classes = explode(' ', $value);
   foreach ($classes as $class) {
@@ -184,14 +184,14 @@ function _textformatter_validate_class($element, &$form_state) {
  * @return string
  *  The value key for the field.
  */
-function _textformatter_get_field_value_key(array $field) {
+function _list_formatter_get_field_value_key(array $field) {
   return (array_key_exists('columns', $field) && is_array($field['columns'])) ? key($field['columns']) : 'value';
 }
 
 /**
  * Theme function to render comma separated lists.
  */
-function theme_textformatter_comma($variables) {
+function theme_list_formatter_comma($variables) {
   $items = $variables['items'];
   $formatter = $variables['formatter'];
   $attributes = new Attribute($variables['attributes']);
@@ -218,7 +218,7 @@ function theme_textformatter_comma($variables) {
 
   // Optionally follow the list with a '.'.
   if ($formatter->getSetting('comma_full_stop')) {
-    $output .= '<span class="textformatter-fullstop">.</span>';
+    $output .= '<span class="list_formatter-fullstop">.</span>';
   }
 
   // Optionally wrap the list in an HTML tag.
