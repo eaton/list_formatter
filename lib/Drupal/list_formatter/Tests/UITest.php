@@ -30,7 +30,7 @@ class UITest extends TestBase {
     $this->assertResponse(200);
 
     $this->assertText('Unordered HTML list (ul)');
-    $this->assertText('CSS Class: list_formatter-list');
+    $this->assertText('CSS Class: list-formatter-list');
   }
 
 }

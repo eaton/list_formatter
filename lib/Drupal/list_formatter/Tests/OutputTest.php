@@ -55,7 +55,7 @@ class OutputTest extends TestBase {
       'type' => 'ul',
       'items' => $items,
       'attributes' => array(
-        'class' => array('list_formatter-list'),
+        'class' => array('list-formatter-list'),
       ),
     );
     $expected = theme('item_list', $options);
