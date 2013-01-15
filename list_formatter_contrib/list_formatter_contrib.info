@@ -1,6 +1,0 @@
-name = List formatter contrib
-description = "List formatter support for contributed modules."
-core = 7.x
-package = Fields
-
-dependencies[] = list_formatter

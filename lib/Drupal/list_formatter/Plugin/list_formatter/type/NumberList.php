@@ -20,10 +20,4 @@ use Drupal\Core\Annotation\Translation;
  */
 class NumberList extends DefaultList {
 
-  /**
-   * @todo.
-   */
-  public function additionalSettings(&$form, &$form_state, $context){
-  }
-
 }
