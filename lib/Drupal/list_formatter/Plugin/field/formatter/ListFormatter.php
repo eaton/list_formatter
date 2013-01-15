@@ -59,7 +59,6 @@ class ListFormatter extends FormatterBase {
       '#states' => array(
         'visible' => array(
           ':input[name="fields[' . $field_name . '][settings_edit_form][settings][type]"]' => array('value' => 'comma'),
-          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][comma_override]"]' => array('checked' => FALSE),
         ),
       ),
     );
@@ -70,7 +69,6 @@ class ListFormatter extends FormatterBase {
       '#states' => array(
         'visible' => array(
           ':input[name="fields[' . $field_name . '][settings_edit_form][settings][type]"]' => array('value' => 'comma'),
-          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][comma_override]"]' => array('checked' => FALSE),
         ),
       ),
     );

@@ -18,7 +18,7 @@ use Drupal\list_formatter\Plugin\ListFormatterListInterface;
  *   id = "entityreference",
  *   module = "entityreference",
  *   settings = {
- *     "entityreference_link" => "1"
+ *     "entityreference_link" = "1"
  *   }
  * )
  */
