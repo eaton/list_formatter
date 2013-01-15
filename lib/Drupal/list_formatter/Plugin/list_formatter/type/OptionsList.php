@@ -15,12 +15,12 @@ use Drupal\list_formatter\Plugin\ListFormatterListInterface;
  * Plugin implementation of the taxonomy module.
  *
  * @Plugin(
- *   id = "list",
- *   module = "list",
+ *   id = "options",
+ *   module = "options",
  *   field_types = {"list_boolean", "list_float", "list_integer", "list_text"}
  * )
  */
-class ListList implements ListFormatterListInterface {
+class OptionsList implements ListFormatterListInterface {
 
   /**
    * @todo.
@@ -30,7 +30,7 @@ class ListList implements ListFormatterListInterface {
     $list_items = array();
 
     // Get allowed values for the field.
-    $allowed_values = list_allowed_values($field);
+    $allowed_values = options_allowed_values($field);
     foreach ($items as $delta => $item) {
       if (isset($allowed_values[$item['value']])) {
         $list_items[$delta] = field_filter_xss($allowed_values[$item['value']]);

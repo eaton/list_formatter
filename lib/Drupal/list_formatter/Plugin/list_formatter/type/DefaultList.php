@@ -37,4 +37,10 @@ class DefaultList implements ListFormatterListInterface {
     return $list_items;
   }
 
+  /**
+   * @todo.
+   */
+  public function additionalSettings(&$form, &$form_state, $context) {
+  }
+
 }

@@ -156,7 +156,7 @@ class ListFormatter extends FormatterBase {
   }
 
   /**
-   * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::settingsForm().
+   * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::settingsSummary().
    */
   public function settingsSummary() {
     $summary = array();
@@ -263,6 +263,7 @@ class ListFormatter extends FormatterBase {
       $field_types = array();
 
       if ($module_key) {
+        // @todo Add the module and key by plugin id, so they can be independent.
         $module = $definition['module'];
         // Add field types by module.
         foreach ($definition['field_types'] as $type) {
