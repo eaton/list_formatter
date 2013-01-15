@@ -94,7 +94,7 @@ function theme_list_formatter_comma($variables) {
 
   // Optionally prefix the last item with 'and'.
   $last = '';
-  if ($formatter->getSetting('comma_and') && (count($items) > 1) && !$formatter->getSetting('comma_override')) {
+  if ($formatter->getSetting('comma_and') && (count($items) > 1)) {
     $last = ' ' . t('and') . ' ' . array_pop($items);
   }
 
@@ -103,7 +103,7 @@ function theme_list_formatter_comma($variables) {
   //Override if we need to.
   if ($formatter->getSetting('comma_override')) {
     $sep = check_plain($formatter->getSetting('separator_custom'));
-    $tag = $settings['separator_custom_tag'];
+    $tag = $formatter->getSetting('separator_custom_tag');
     if ($tag) {
       $class = $formatter->getSetting('separator_custom_class');
       $separator = "<$tag class=\"$class\">$sep</$tag>";
@@ -119,7 +119,7 @@ function theme_list_formatter_comma($variables) {
 
   // Optionally wrap the list in an HTML tag.
   $tag = $formatter->getSetting('comma_tag');
-  if ($tag) {
+  if (!empty($tag)) {
     $output = "<$tag$attributes>$output</$tag>";
   }
 
