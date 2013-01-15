@@ -67,12 +67,13 @@ class EntityReferenceList implements ListFormatterListInterface {
    * @todo.
    */
   public function additionalSettings(&$elements, $field, $instance, $formatter) {
-    if ($context['field']['type'] == 'entityreference') {
+    if ($field['type'] == 'entityreference') {
+      $settings = $this->getSetting('contrib');
       $form['list_formatter_contrib']['entityreference_link'] = array(
         '#type' => 'checkbox',
         '#title' => t("Link list items to their @entity entity.", array('@entity' => $field['settings']['target_type'])),
         '#description' => t("Generate item list with links to the node page"),
-        '#default_value' => isset($settings['list_formatter_contrib']['entityreference_link']) ? $settings['list_formatter_contrib']['entityreference_link'] : TRUE,
+        '#default_value' => $settings['entityreference_link'],
       );
     }
   }
