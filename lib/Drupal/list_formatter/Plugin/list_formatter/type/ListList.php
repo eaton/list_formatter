@@ -15,8 +15,8 @@ use Drupal\list_formatter\Plugin\ListFormatterListInterface;
  * Plugin implementation of the taxonomy module.
  *
  * @Plugin(
- *   id = "lists",
- *   module = "lists",
+ *   id = "list",
+ *   module = "list",
  *   field_types = {"list_boolean", "list_float", "list_integer", "list_text"}
  * )
  */

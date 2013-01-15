@@ -21,14 +21,6 @@ use Drupal\list_formatter\Plugin\ListFormatterListInterface;
 class TaxonomyList implements ListFormatterListInterface {
 
   /**
-   * [fields description]
-   * @return [type] [description]
-   */
-  public function fieldTypes() {
-    return array('taxonomy_term_reference');
-  }
-
-  /**
    * @todo.
    */
   public function createList($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
@@ -66,6 +58,14 @@ class TaxonomyList implements ListFormatterListInterface {
   /**
    * @todo.
    */
-  public function additionalSettings(&$form, &$form_state, $context);
+  public function additionalSettings(&$form, &$form_state, $context) {
+    if ($context['field']['type'] == 'taxonomy_term_reference') {
+      $elements['term_plain'] = array(
+        '#type' => 'checkbox',
+        '#title' => t("Display taxonomy terms as plain text (Not term links)."),
+        '#default_value' => $this->getSetting('term_plain'),
+      );
+    }
+  }
 
 }

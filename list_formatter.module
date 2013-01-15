@@ -34,7 +34,7 @@ function list_formatter_help($path, $arg) {
  * Implements hook_field_formatter_info_alter().
  */
 function list_formatter_field_formatter_info_alter(&$info) {
-  $list_formatter_info = ListFormatter::prepareFieldListInfo();
+  $list_formatter_info = ListFormatter::fieldListInfo();
   $info['list_formatter']['field_types'] = $list_formatter_info['field_types'];
   $info['list_formatter']['settings']['contrib'] = $list_formatter_info['settings'];
 }

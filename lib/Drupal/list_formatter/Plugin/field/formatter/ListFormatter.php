@@ -12,6 +12,7 @@ use Drupal\Core\Annotation\Translation;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\field\Plugin\Type\Formatter\FormatterBase;
 use Drupal\list_formatter\Plugin\ListFormatterPluginManager;
+use Drupal\Component\Utility\NestedArray;
 
 /**
  * Plugin implementation of the 'text_default' formatter.
@@ -144,15 +145,6 @@ class ListFormatter extends FormatterBase {
       '#element_validate' => array('_list_formatter_validate_class'),
     );
 
-    // Taxonomy term ref fields only.
-    if ($this->field['type'] == 'taxonomy_term_reference') {
-      $elements['term_plain'] = array(
-        '#type' => 'checkbox',
-        '#title' => t("Display taxonomy terms as plain text (Not term links)."),
-        '#default_value' => $this->getSetting('term_plain'),
-      );
-    }
-
     $context = array(
       'field' => $this->field,
       'instance' => $this->instance,
@@ -189,22 +181,19 @@ class ListFormatter extends FormatterBase {
   public function viewElements(EntityInterface $entity, $langcode, array $items) {
     $module = $this->field['module'];
     $field_type = $this->field['type'];
-    $list_formatter_info = $this->fieldListInfo();
+    $list_formatter_info = $this->fieldListInfo(TRUE);
     $elements = $list_items = array();
 
-    if (!empty($list_formatter_info[$module]['callback']) && in_array($field_type, $list_formatter_info[$module]['fields'])) {
-      $function = $list_formatter_info[$module]['callback'];
-      if (function_exists($function)) {
+    if (in_array($field_type, $list_formatter_info['field_types'][$module])) {
+      $manager = new ListFormatterPluginManager();
+      if ($plugin = $manager->createInstance($module)) {
         // Support existing function implementations.
         $display = array(
           'type' => $this->getPluginId(),
           'settings' => $this->getSettings(),
           'label' => $this->label,
         );
-        $list_items = $function($entity->entityType(), $entity, $this->field, $this->instance, $langcode, $items, $display);
-      }
-      else {
-        drupal_set_message(t('function @function does not exist.', array('@function' => $function)), 'error');
+        $list_items = $plugin->createList($entity->entityType(), $entity, $this->field, $this->instance, $langcode, $items, $display);
       }
     }
     else {
@@ -258,18 +247,34 @@ class ListFormatter extends FormatterBase {
    *
    * This iterates through each item returned from fieldListInfo.
    *
+   * @param bool $module_key
+   *
    * @return array
    *   An array of fields and settings from hook_list_formatter_field_info data
    *   implementations. Containing an aggregated array from all items.
    */
-  static public function prepareFieldListInfo() {
+  static public function fieldListInfo($module_key = FALSE) {
     $manager = new ListFormatterPluginManager();
     $field_info = array('field_types' => array(), 'settings' => array());
 
     // Create array of all field types and default settings.
     foreach ($manager->getDefinitions() as $id => $definition) {
-      $field_info['field_types'] = array_merge($field_info['field_types'], $definition['field_types']);
-      $field_info['settings'] = array_merge($field_info['settings'], $definition['settings']);
+      $field_types = array();
+
+      if ($module_key) {
+        $module = $definition['module'];
+        // Add field types by module.
+        foreach ($definition['field_types'] as $type) {
+          $field_types[$module][] = $type;
+        }
+      }
+      // Otherwise just merge this, as is. Don't need mergeDeep here.
+      else {
+        $field_types = array_merge($field_types, $definition['field_types']);
+      }
+
+      $field_info['field_types'] = NestedArray::mergeDeep($field_info['field_types'], $field_types);
+      $field_info['settings'] = NestedArray::MergeDeep($field_info['settings'], $definition['settings']);
     }
 
     return $field_info;
