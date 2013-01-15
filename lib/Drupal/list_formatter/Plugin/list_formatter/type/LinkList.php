@@ -39,8 +39,9 @@ class LinkList implements ListFormatterListInterface {
   /**
    * @todo.
    */
-  public function additionalSettings(&$form, &$form_state, $context) {
-    if ($context['field']['type'] == 'link_field') {
+  public function additionalSettings(&$elements, $field, $instance, $formatter) {
+    if ($field['type'] == 'link_field') {
+      $settings = $field['settings'];
       $link_info = is_callable('link_field_formatter_info') ? link_field_formatter_info() : array();
       $form['list_formatter_contrib']['link_field_display_type'] = array(
         '#type' => 'select',

@@ -49,7 +49,7 @@ class TextList implements ListFormatterListInterface {
   /**
    * @todo.
    */
-  public function additionalSettings(&$form, &$form_state, $context) {
+  public function additionalSettings(&$elements, $field, $instance, $formatter) {
   }
 
 }

@@ -33,7 +33,7 @@ use Drupal\Component\Utility\NestedArray;
  *     "separator_custom" = "",
  *     "separator_custom_tag" = "span",
  *     "separator_custom_class" = "list-formatter-separator",
- *     "contrib" = ""
+ *     "contrib" = {""}
  *    }
  * )
  */
@@ -143,12 +143,10 @@ class ListFormatter extends FormatterBase {
       '#element_validate' => array('_list_formatter_validate_class'),
     );
 
-    $context = array(
-      'field' => $this->field,
-      'instance' => $this->instance,
-      'view_mode' => $this->viewMode,
-    );
-    drupal_alter('list_formatter_field_formatter_settings_form', $form, $form_state, $context);
+    $manager = new ListFormatterPluginManager();
+    foreach ($manager->getDefinitions() as $id => $definition) {
+      $manager->createInstance($id)->additionalSettings($elements, $this->field, $this->instance, $this);
+    }
 
     return $elements;
   }

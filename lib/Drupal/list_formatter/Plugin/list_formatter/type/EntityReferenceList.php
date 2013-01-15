@@ -66,7 +66,7 @@ class EntityReferenceList implements ListFormatterListInterface {
   /**
    * @todo.
    */
-  public function additionalSettings(&$form, &$form_state, $context) {
+  public function additionalSettings(&$elements, $field, $instance, $formatter) {
     if ($context['field']['type'] == 'entityreference') {
       $form['list_formatter_contrib']['entityreference_link'] = array(
         '#type' => 'checkbox',

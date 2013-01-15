@@ -58,12 +58,12 @@ class TaxonomyList implements ListFormatterListInterface {
   /**
    * @todo.
    */
-  public function additionalSettings(&$form, &$form_state, $context) {
-    if ($context['field']['type'] == 'taxonomy_term_reference') {
+  public function additionalSettings(&$elements, $field, $instance, $formatter) {
+    if ($field['type'] == 'taxonomy_term_reference') {
       $elements['term_plain'] = array(
         '#type' => 'checkbox',
         '#title' => t("Display taxonomy terms as plain text (Not term links)."),
-        '#default_value' => $this->getSetting('term_plain'),
+        '#default_value' => $formatter->getSetting('term_plain'),
       );
     }
   }
