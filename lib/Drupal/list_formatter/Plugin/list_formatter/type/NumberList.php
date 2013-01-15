@@ -18,7 +18,7 @@ use Drupal\Core\Annotation\Translation;
  *   field_types = {"number_integer", "number_decimal", "number_float"}
  * )
  */
-class NumberList extends ListTypePluginBase {
+class NumberList extends DefaultList {
 
   /**
    * @todo.

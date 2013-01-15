@@ -183,9 +183,9 @@ class ListFormatter extends FormatterBase {
     $field_type = $this->field['type'];
     $list_formatter_info = $this->fieldListInfo(TRUE);
     $elements = $list_items = array();
+    $manager = new ListFormatterPluginManager();
 
     if (in_array($field_type, $list_formatter_info['field_types'][$module])) {
-      $manager = new ListFormatterPluginManager();
       if ($plugin = $manager->createInstance($module)) {
         // Support existing function implementations.
         $display = array(
@@ -197,8 +197,9 @@ class ListFormatter extends FormatterBase {
       }
     }
     else {
+      $plugin = $manager->createInstance('default');
       foreach ($items as $delta => $item) {
-        $list_items = $this->defaultFieldList($entity, $langcode, $items);
+        $list_items = $plugin->createList($entity->entityType(), $entity, $this->field, $this->instance, $langcode, $items, $display);
       }
     }
 

@@ -7,12 +7,19 @@
 
 namespace Drupal\list_formatter\Plugin\list_formatter\type;
 
+use Drupal\Core\Annotation\Plugin;
+use Drupal\Core\Annotation\Translation;
 use Drupal\list_formatter\Plugin\ListFormatterListInterface;
 
 /**
- * Abstract base class for ListType plugins.
+ * Default list implementation plugin.
+ *
+ * @Plugin(
+ *   id = "default",
+ *   module = "list_formatter"
+ * )
  */
-abstract class ListTypePluginBase implements ListFormatterListInterface {
+class DefaultList implements ListFormatterListInterface {
 
   /**
    * Implements \Drupal\list_formatter\Plugin\ListFormatterListInterface::createList().
