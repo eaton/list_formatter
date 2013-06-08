@@ -7,8 +7,7 @@
 
 namespace Drupal\list_formatter\Plugin\list_formatter\type;
 
-use Drupal\Core\Annotation\Plugin;
-use Drupal\Core\Annotation\Translation;
+use Drupal\Component\Annotation\Plugin;
 use Drupal\list_formatter\Plugin\ListFormatterListInterface;
 
 /**
@@ -28,7 +27,7 @@ class DefaultList implements ListFormatterListInterface {
     $list_items = array();
 
     // Use our helper function to get the value key dynamically.
-    $value_key = _list_formatter_get_field_value_key($this->field);
+    $value_key = $this->getFieldValueKey($this->field);
 
     foreach ($items as $delta => $item) {
       $list_items[$delta] = check_plain($item[$value_key]);
@@ -41,6 +40,19 @@ class DefaultList implements ListFormatterListInterface {
    * @todo.
    */
   public function additionalSettings(&$elements, $field, $instance, $formatter) {
+  }
+
+  /**
+   * Helper to return the value key for a field instance.
+   *
+   * @param $field array
+   *  The whole array of field instance info provided by the field api.
+   *
+   * @return string
+   *  The value key for the field.
+   */
+  public function getFieldValueKey(array $field) {
+    return (array_key_exists('columns', $field) && is_array($field['columns'])) ? key($field['columns']) : 'value';
   }
 
 }

@@ -6,8 +6,7 @@
 
 namespace Drupal\list_formatter\Plugin\list_formatter\type;
 
-use Drupal\Core\Annotation\Plugin;
-use Drupal\Core\Annotation\Translation;
+use Drupal\Component\Annotation\Plugin;
 
 /**
  * Plugin implementation of the taxonomy module.

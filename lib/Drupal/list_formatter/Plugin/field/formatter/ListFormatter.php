@@ -7,12 +7,12 @@
 
 namespace Drupal\list_formatter\Plugin\field\formatter;
 
-use Drupal\Core\Annotation\Plugin;
+use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Annotation\Plugin;
 use Drupal\Core\Annotation\Translation;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\field\Plugin\Type\Formatter\FormatterBase;
 use Drupal\list_formatter\Plugin\ListFormatterPluginManager;
-use Drupal\Component\Utility\NestedArray;
 
 /**
  * Plugin implementation of the 'text_default' formatter.
@@ -143,7 +143,7 @@ class ListFormatter extends FormatterBase {
       '#element_validate' => array('_list_formatter_validate_class'),
     );
 
-    $manager = new ListFormatterPluginManager();
+    $manager = \Drupal::service('plugin.manager.list_formatter.type');
     foreach ($manager->getDefinitions() as $id => $definition) {
       $manager->createInstance($id)->additionalSettings($elements, $this->field, $this->instance, $this);
     }
@@ -168,7 +168,7 @@ class ListFormatter extends FormatterBase {
       $summary[] = '<em>*' . t("Comma separator overridden") . '*</em>';
     }
 
-    return implode('<br>', $summary);
+    return $summary;
   }
 
   /**
@@ -179,7 +179,7 @@ class ListFormatter extends FormatterBase {
     $field_type = $this->field['type'];
     $list_formatter_info = $this->fieldListInfo(TRUE);
     $elements = $list_items = array();
-    $manager = new ListFormatterPluginManager();
+    $manager = \Drupal::service('plugin.manager.list_formatter.type');
 
     if (in_array($field_type, $list_formatter_info['field_types'][$module])) {
       if ($plugin = $manager->createInstance($module)) {
@@ -251,7 +251,7 @@ class ListFormatter extends FormatterBase {
    *   implementations. Containing an aggregated array from all items.
    */
   static public function fieldListInfo($module_key = FALSE) {
-    $manager = new ListFormatterPluginManager();
+    $manager = \Drupal::service('plugin.manager.list_formatter.type');
     $field_info = array('field_types' => array(), 'settings' => array());
 
     // Create array of all field types and default settings.

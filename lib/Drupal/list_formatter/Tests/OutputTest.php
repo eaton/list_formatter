@@ -2,10 +2,12 @@
 
 /**
  * @file
- * Definition of Drupal\list_formatter\Tests\OutputTest.
+ * Contains \Drupal\list_formatter\Tests\OutputTest.
  */
 
 namespace Drupal\list_formatter\Tests;
+
+use Drupal\Core\Language\Language;
 
 /**
  * Test the rendered output of list fields.
@@ -26,27 +28,23 @@ class OutputTest extends TestBase {
   public function testOutput() {
     $this->drupalLogin($this->adminUser);
 
-    $field_values = array(LANGUAGE_NOT_SPECIFIED => array());
+    $field_values = array(Language::LANGCODE_NOT_SPECIFIED => array());
     for ($i = 0; $i < 10; $i++) {
-      $field_values[LANGUAGE_NOT_SPECIFIED][] = array('value' => $this->randomName());
+      $field_values[Language::LANGCODE_NOT_SPECIFIED][] = array('value' => $this->randomName());
     }
 
     $node = $this->drupalCreateNode(array($this->fieldName => $field_values, 'type' => $this->contentType->type));
-    $this->verbose('Node: ' . var_export($node, TRUE));
-
     $page = $this->drupalGet('node/' . $node->nid);
-
-    $this->verbose('Page: ' . $page);
 
     $this->drupalSetContent($page);
     $this->assertResponse(200);
 
-    foreach ($field_values[LANGUAGE_NOT_SPECIFIED] as $delta => $item) {
+    foreach ($field_values[Language::LANGCODE_NOT_SPECIFIED] as $delta => $item) {
       $this->assertText($item['value'], t('Field value !delta output on node.', array('!delta' => $delta)));
     }
 
     $items = array();
-    foreach ($field_values[LANGUAGE_NOT_SPECIFIED] as $item) {
+    foreach ($field_values[Language::LANGCODE_NOT_SPECIFIED] as $item) {
       $items[] = $item['value'];
     }
 

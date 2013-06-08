@@ -5,8 +5,7 @@
 
 namespace Drupal\list_formatter\Plugin\list_formatter\type;
 
-use Drupal\Core\Annotation\Plugin;
-use Drupal\Core\Annotation\Translation;
+use Drupal\Component\Annotation\Plugin;
 use Drupal\list_formatter\Plugin\ListFormatterListInterface;
 
 /**
@@ -41,7 +40,7 @@ class TaxonomyList implements ListFormatterListInterface {
         continue;
       }
       // Use the item name if autocreating, as there won't be a term object yet.
-      $term_name = ($item['tid'] === 'autocreate') ? $item['name'] : $terms[$item['tid']]->name;
+      $term_name = ($item['tid'] === 'autocreate') ? $item['name'] : $terms[$item['tid']]->label();
       // Check if we should display as term links or not.
       if ($settings['term_plain'] || ($item['tid'] === 'autocreate')) {
         $list_items[$delta] = check_plain($term_name);

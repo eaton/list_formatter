@@ -23,8 +23,8 @@ class ListFormatterPluginManager extends PluginManagerBase {
   /**
    * Constructs a ListFormatterPluginManager object.
    */
-  public function __construct() {
-    $this->discovery = new AnnotatedClassDiscovery('list_formatter', 'type');
+  public function __construct(\Traversable $namespaces) {
+    $this->discovery = new AnnotatedClassDiscovery('list_formatter/type', $namespaces);
     $this->discovery = new ProcessDecorator($this->discovery, array($this, 'processDefinition'));
     $this->discovery = new AlterDecorator($this->discovery, 'list_formatter_list_plugins');
     $this->discovery = new CacheDecorator($this->discovery, 'list_formatter:list_plugins', 'cache');

@@ -72,19 +72,6 @@ function _list_formatter_validate_class($element, &$form_state) {
 }
 
 /**
- * Helper to return the value key for a field instance.
- *
- * @param $field array
- *  The whole array of field instance info provided by the field api.
- *
- * @return string
- *  The value key for the field.
- */
-function _list_formatter_get_field_value_key(array $field) {
-  return (array_key_exists('columns', $field) && is_array($field['columns'])) ? key($field['columns']) : 'value';
-}
-
-/**
  * Theme function to render comma separated lists.
  */
 function theme_list_formatter_comma($variables) {

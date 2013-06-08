@@ -7,8 +7,7 @@
 
 namespace Drupal\list_formatter\Plugin\list_formatter\type;
 
-use Drupal\Core\Annotation\Plugin;
-use Drupal\Core\Annotation\Translation;
+use Drupal\Component\Annotation\Plugin;
 use Drupal\list_formatter\Plugin\ListFormatterListInterface;
 
 /**

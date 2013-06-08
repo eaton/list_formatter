@@ -29,10 +29,8 @@ abstract class TestBase extends WebTestBase {
     $this->contentType = $this->drupalCreateContentType();
 
     $this->fieldName = drupal_strtolower($this->randomName() . '_field_name');
-    $this->field = array('field_name' => $this->fieldName, 'type' => 'text', 'cardinality' => -1);
-    $this->field = field_create_field($this->field);
-
-    $this->fieldID = $this->field['id'];
+    $field = array('field_name' => $this->fieldName, 'type' => 'text', 'cardinality' => -1);
+    $this->field = field_create_field($field);
 
     $this->instance = array(
       'field_name' => $this->fieldName,
@@ -43,10 +41,6 @@ abstract class TestBase extends WebTestBase {
       'weight' => mt_rand(0, 127),
       'settings' => array(
         'max_length' => 255,
-      ),
-      'widget' => array(
-        'type' => 'text_textfield',
-        'label' => 'Test Field',
       ),
     );
     field_create_instance($this->instance);
@@ -71,8 +65,9 @@ abstract class TestBase extends WebTestBase {
       'weight' => '10',
     );
 
-    entity_get_display('node', $this->contentType->type, 'default')
-      ->setComponent($this->fieldName, $display)->save();
+    entity_get_display('node', $this->contentType->type, 'full')
+      ->setComponent($this->fieldName, $display)
+      ->save();
   }
 
 }
