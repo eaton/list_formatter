@@ -8,20 +8,19 @@
 namespace Drupal\list_formatter\Plugin\field\formatter;
 
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Component\Annotation\Plugin;
 use Drupal\Core\Annotation\Translation;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\field\Plugin\Type\Formatter\FormatterBase;
-use Drupal\list_formatter\Plugin\ListFormatterPluginManager;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Plugin implementation of the 'text_default' formatter.
  *
- * @Plugin(
+ * @FieldFormatter(
  *   id = "list_formatter",
- *   module = "list_formatter",
  *   label = @Translation("List"),
- *   field_types = "",
+ *   field_types = {},
  *   settings = {
  *     "type" = "ul",
  *     "class" = "list-formatter-list",
@@ -33,7 +32,7 @@ use Drupal\list_formatter\Plugin\ListFormatterPluginManager;
  *     "separator_custom" = "",
  *     "separator_custom_tag" = "span",
  *     "separator_custom_class" = "list-formatter-separator",
- *     "contrib" = {""}
+ *     "contrib" = {}
  *    }
  * )
  */
@@ -42,7 +41,7 @@ class ListFormatter extends FormatterBase {
   /**
    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::settingsForm().
    */
-  public function settingsForm(array $form, array &$form_state) {
+  public function settingsForm(array $form, FormStateInterface $form_state) {
     $field_name = $this->field['field_name'];
 
     $elements['type'] = array(
@@ -174,7 +173,7 @@ class ListFormatter extends FormatterBase {
   /**
    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::viewElements().
    */
-  public function viewElements(EntityInterface $entity, $langcode, array $items) {
+  public function viewElements(FieldItemListInterface $items, $langcode) {
     $module = $this->field['module'];
     $field_type = $this->field['type'];
     $list_formatter_info = $this->fieldListInfo(TRUE);
@@ -272,7 +271,7 @@ class ListFormatter extends FormatterBase {
       }
 
       $field_info['field_types'] = NestedArray::mergeDeep($field_info['field_types'], $field_types);
-      $field_info['settings'] = NestedArray::MergeDeep($field_info['settings'], $definition['settings']);
+      $field_info['settings'] = NestedArray::mergeDeep($field_info['settings'], $definition['settings']);
     }
 
     return $field_info;

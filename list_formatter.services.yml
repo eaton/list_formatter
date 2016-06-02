@@ -1,4 +1,4 @@
 services:
   plugin.manager.list_formatter.type:
     class: Drupal\list_formatter\Plugin\ListFormatterPluginManager
-    arguments: ['@container.namespaces']
+    parent: default_plugin_manager

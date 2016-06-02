@@ -7,35 +7,32 @@
 
 namespace Drupal\list_formatter\Plugin;
 
-use Drupal\Component\Plugin\PluginManagerBase;
-use Drupal\Component\Plugin\Discovery\DerivativeDiscoveryDecorator;
-use Drupal\Component\Plugin\Factory\DefaultFactory;
-use Drupal\Component\Plugin\Discovery\ProcessDecorator;
-use Drupal\Core\Plugin\Discovery\AlterDecorator;
-use Drupal\Core\Plugin\Discovery\AnnotatedClassDiscovery;
-use Drupal\Core\Plugin\Discovery\CacheDecorator;
+use Drupal\Core\Plugin\DefaultPluginManager;
+use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
  * Plugin type manager for all views plugins.
  */
-class ListFormatterPluginManager extends PluginManagerBase {
+class ListFormatterPluginManager extends DefaultPluginManager {
 
   /**
-   * Constructs a ListFormatterPluginManager object.
+   * Constructs the FieldTypePluginManager object
+   *
+   * @param \Traversable $namespaces
+   *   An object that implements \Traversable which contains the root paths
+   *   keyed by the corresponding namespace to look for plugin implementations.
+   * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
+   *   Cache backend instance to use.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface
+   *   The module handler.
+   * @param \Drupal\Core\TypedData\TypedDataManagerInterface $typed_data_manager
+   *   The typed data manager.
    */
-  public function __construct(\Traversable $namespaces) {
-    $this->discovery = new AnnotatedClassDiscovery('list_formatter/type', $namespaces);
-    $this->discovery = new ProcessDecorator($this->discovery, array($this, 'processDefinition'));
-    $this->discovery = new AlterDecorator($this->discovery, 'list_formatter_list_plugins');
-    $this->discovery = new CacheDecorator($this->discovery, 'list_formatter:list_plugins', 'cache');
-
-    $this->factory = new DefaultFactory($this);
-
-    $this->defaults += array(
-      'module' => 'list_formatter',
-      'field_types' => array(),
-      'settings' => array(),
-    );
+  public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+    parent::__construct('Plugin/list_formatter', $namespaces, $module_handler, 'Drupal\Core\Field\FieldItemInterface', 'Drupal\list_formatter\Annotation\ListFormatter');
+    $this->alterInfo('field_info');
+    $this->setCacheBackend($cache_backend, 'list_formatter_plugins');
   }
 
 }
