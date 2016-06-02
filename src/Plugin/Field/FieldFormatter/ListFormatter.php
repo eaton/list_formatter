@@ -5,7 +5,7 @@
  * Definition of Drupal\list_formatter\Plugin\field\formatter\List;
  */
 
-namespace Drupal\list_formatter\Plugin\field\formatter;
+namespace Drupal\list_formatter\Plugin\Field\FieldFormatter;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Annotation\Translation;

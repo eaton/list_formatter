@@ -5,7 +5,7 @@
  * Provide a field formatter to render values as HTML or comma-separated lists.
  */
 
-use Drupal\list_formatter\Plugin\field\formatter\ListFormatter;
+use Drupal\list_formatter\Plugin\Field\FieldFormatter\ListFormatter;
 use Drupal\Core\Template\Attribute;
 use Drupal\Component\Utility\NestedArray;
 

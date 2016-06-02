@@ -16,7 +16,7 @@ use Drupal\list_formatter\Plugin\ListFormatterListInterface;
  * @ListFormatter(
  *   id = "options",
  *   module = "options",
- *   field_types = {"list_boolean", "list_float", "list_integer", "list_text"}
+ *   field_types = {"list_boolean", "list_float", "list_integer", "list_string"}
  * )
  */
 class OptionsList implements ListFormatterListInterface {

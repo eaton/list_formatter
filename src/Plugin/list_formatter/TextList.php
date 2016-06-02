@@ -14,7 +14,7 @@ use Drupal\list_formatter\Plugin\ListFormatterListInterface;
  * @ListFormatter(
  *   id = "text",
  *   module = "text",
- *   field_types = {"text", "text_long", "text_with_summary"}
+ *   field_types = {"text_default", "text_long", "text_with_summary"}
  * )
  */
 class TextList implements ListFormatterListInterface {
