@@ -11,7 +11,7 @@ use Drupal\list_formatter\Plugin\ListFormatterListInterface;
 /**
  * Plugin implementation of the taxonomy module.
  *
- * @Plugin(
+ * @ListFormatter(
  *   id = "text",
  *   module = "text",
  *   field_types = {"text", "text_long", "text_with_summary"}

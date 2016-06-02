@@ -44,13 +44,13 @@ function list_formatter_field_formatter_info_alter(&$info) {
  */
 function list_formatter_theme($existing, $type, $theme, $path) {
   return array(
-    'list_formatter_comma' => array(
-      'variables' => array(
+    'list_formatter_comma' => [
+      'variables' => [
         'items' => NULL,
         'formatter' => NULL,
         'attributes' => NULL
-      ),
-    ),
+      ],
+    ],
   );
 }
 

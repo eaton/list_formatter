@@ -13,7 +13,7 @@ use Drupal\list_formatter\Plugin\ListFormatterListInterface;
 /**
  * Plugin implementation of the taxonomy module.
  *
- * @Plugin(
+ * @ListFormatter(
  *   id = "options",
  *   module = "options",
  *   field_types = {"list_boolean", "list_float", "list_integer", "list_text"}

@@ -42,105 +42,105 @@ class ListFormatter extends FormatterBase {
    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::settingsForm().
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
-    $field_name = $this->field['field_name'];
+    $field_name = $this->fieldDefinition->getName();
 
-    $elements['type'] = array(
-      '#title' => t("List type"),
+    $elements['type'] = [
+      '#title' => $this->t("List type"),
       '#type' => 'select',
       '#options' => $this->listTypes(),
       '#default_value' => $this->getSetting('type'),
       '#required' => TRUE,
-    );
-    $elements['comma_and'] = array(
+    ];
+    $elements['comma_and'] = [
       '#type' => 'checkbox',
-      '#title' => t("Include 'and' before the last item"),
+      '#title' => $this->t("Include 'and' before the last item"),
       '#default_value' => $this->getSetting('comma_and'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][type]"]' => array('value' => 'comma'),
-        ),
-      ),
-    );
-    $elements['comma_full_stop'] = array(
+      '#states' => [
+        'visible' => [
+          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][type]"]' => ['value' => 'comma'],
+        ],
+      ],
+    ];
+    $elements['comma_full_stop'] = [
       '#type' => 'checkbox',
-      '#title' => t("Append comma separated list with '.'"),
+      '#title' => $this->t("Append comma separated list with '.'"),
       '#default_value' => $this->getSetting('comma_full_stop'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][type]"]' => array('value' => 'comma'),
-        ),
-      ),
-    );
+      '#states' => [
+        'visible' => [
+          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][type]"]' => ['value' => 'comma'],
+        ],
+      ],
+    ];
 
     //Override Comma with custom separator.
-    $elements['comma_override'] = array(
+    $elements['comma_override'] = [
       '#type' => 'checkbox',
-      '#title' => t("Override comma separator"),
-      '#description' => t("Override the default comma separator with a custom separator string."),
+      '#title' => $this->t("Override comma separator"),
+      '#description' => $this->t("Override the default comma separator with a custom separator string."),
       '#default_value' => $this->getSetting('comma_override'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][type]"]' => array('value' => 'comma'),
-        ),
-      ),
-    );
-    $elements['separator_custom'] = array(
+      '#states' => [
+        'visible' => [
+          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][type]"]' => ['value' => 'comma'],
+        ],
+      ],
+    ];
+    $elements['separator_custom'] = [
       '#type' => 'textfield',
-      '#title' => t("Custom separator"),
-      '#description' => t("Override default comma separator with a custom separator string. You must add your own spaces in this string if you want them. @example", array('@example' => "E.g. ' + ', or ' => '")),
+      '#title' => $this->t("Custom separator"),
+      '#description' => $this->t("Override default comma separator with a custom separator string. You must add your own spaces in this string if you want them. @example", ['@example' => "E.g. ' + ', or ' => '"]),
       '#size' => 40,
       '#default_value' => $this->getSetting('separator_custom'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][comma_override]"]' => array('checked' => TRUE),
-        ),
-      ),
-    );
-    $elements['separator_custom_tag'] = array(
+      '#states' => [
+        'visible' => [
+          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][comma_override]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+    $elements['separator_custom_tag'] = [
       '#type' => 'select',
-      '#title' => t("separator HTML wrapper"),
-      '#description' => t("An HTML tag to wrap the separator in."),
+      '#title' => $this->t("separator HTML wrapper"),
+      '#description' => $this->t("An HTML tag to wrap the separator in."),
       '#options' => $this->wrapperOptions(),
       '#default_value' => $this->getSetting('separator_custom_tag'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][comma_override]"]' => array('checked' => TRUE),
-        ),
-      ),
-    );
-    $elements['separator_custom_class'] = array(
-      '#title' => t("Separator classes"),
+      '#states' => [
+        'visible' => [
+          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][comma_override]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+    $elements['separator_custom_class'] = [
+      '#title' => $this->t("Separator classes"),
       '#type' => 'textfield',
-      '#description' => t("A CSS class to use in the wrapper tag for the separator."),
+      '#description' => $this->t("A CSS class to use in the wrapper tag for the separator."),
       '#default_value' => $this->getSetting('separator_custom_class'),
-      '#element_validate' => array('_list_formatter_validate_class'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][comma_override]"]' => array('checked' => TRUE),
-        ),
-      ),
-    );
+      '#element_validate' => ['_list_formatter_validate_class'],
+      '#states' => [
+        'visible' => [
+          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][comma_override]"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
 
-    $elements['comma_tag'] = array(
+    $elements['comma_tag'] = [
       '#type' => 'select',
-      '#title' => t("HTML wrapper"),
-      '#description' => t("An HTML tag to wrap the list in. The CSS class below will be added to this tag."),
+      '#title' => $this->t("HTML wrapper"),
+      '#description' => $this->t("An HTML tag to wrap the list in. The CSS class below will be added to this tag."),
       '#options' => $this->wrapperOptions(),
       '#default_value' => $this->getSetting('comma_tag'),
-      '#states' => array(
-        'visible' => array(
-          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][type]"]' => array('value' => 'comma'),
-        ),
-      ),
-    );
-    $elements['class'] = array(
-      '#title' => t("List classes"),
+      '#states' => [
+        'visible' => [
+          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][type]"]' => ['value' => 'comma'],
+        ],
+      ],
+    ];
+    $elements['class'] = [
+      '#title' => $this->t("List classes"),
       '#type' => 'textfield',
       '#size' => 40,
-      '#description' => t("A CSS class to use in the markup for the field list."),
+      '#description' => $this->t("A CSS class to use in the markup for the field list."),
       '#default_value' => $this->getSetting('class'),
-      '#element_validate' => array('_list_formatter_validate_class'),
-    );
+      '#element_validate' => ['_list_formatter_validate_class'],
+    ];
 
     $manager = \Drupal::service('plugin.manager.list_formatter.type');
     foreach ($manager->getDefinitions() as $id => $definition) {
@@ -178,7 +178,7 @@ class ListFormatter extends FormatterBase {
     $field_type = $this->field['type'];
     $list_formatter_info = $this->fieldListInfo(TRUE);
     $elements = $list_items = array();
-    $manager = \Drupal::service('plugin.manager.list_formatter.type');
+    $manager = \Drupal::service('plugin.manager.list_formatter');
 
     if (in_array($field_type, $list_formatter_info['field_types'][$module])) {
       if ($plugin = $manager->createInstance($module)) {
@@ -250,8 +250,8 @@ class ListFormatter extends FormatterBase {
    *   implementations. Containing an aggregated array from all items.
    */
   static public function fieldListInfo($module_key = FALSE) {
-    $manager = \Drupal::service('plugin.manager.list_formatter.type');
-    $field_info = array('field_types' => array(), 'settings' => array());
+    $manager = \Drupal::service('plugin.manager.list_formatter');
+    $field_info = array('field_types' => [], 'settings' => []);
 
     // Create array of all field types and default settings.
     foreach ($manager->getDefinitions() as $id => $definition) {
@@ -285,9 +285,9 @@ class ListFormatter extends FormatterBase {
    */
   public function listTypes() {
     return array(
-      'ul' => t("Unordered HTML list (ul)"),
-      'ol' => t("Ordered HTML list (ol)"),
-      'comma' => t("Comma separated list"),
+      'ul' => $this->t("Unordered HTML list (ul)"),
+      'ol' => $this->t("Ordered HTML list (ol)"),
+      'comma' => $this->t("Comma separated list"),
     );
   }
 
@@ -299,16 +299,16 @@ class ListFormatter extends FormatterBase {
    */
   public function wrapperOptions() {
     return array(
-      t('No HTML tag'),
-      'div' => t('Div'),
-      'span' => t('Span'),
-      'p' => t('Paragraph'),
-      'h1' => t('Header 1'),
-      'h2' => t('Header 2'),
-      'h3' => t('Header 3'),
-      'h4' => t('Header 4'),
-      'h5' => t('Header 5'),
-      'h6' => t('Header 6'),
+      $this->t('No HTML tag'),
+      'div' => $this->t('Div'),
+      'span' => $this->t('Span'),
+      'p' => $this->t('Paragraph'),
+      'h1' => $this->t('Header 1'),
+      'h2' => $this->t('Header 2'),
+      'h3' => $this->t('Header 3'),
+      'h4' => $this->t('Header 4'),
+      'h5' => $this->t('Header 5'),
+      'h6' => $this->t('Header 6'),
     );
   }
 

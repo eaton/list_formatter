@@ -13,7 +13,7 @@ use Drupal\list_formatter\Plugin\ListFormatterListInterface;
 /**
  * Default list implementation plugin.
  *
- * @Plugin(
+ * @ListFormatter(
  *   id = "entityreference",
  *   module = "entityreference",
  *   settings = {

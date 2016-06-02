@@ -11,7 +11,7 @@ use Drupal\Component\Annotation\Plugin;
 /**
  * Plugin implementation of the taxonomy module.
  *
- * @Plugin(
+ * @ListFormatter(
  *   id = "number",
  *   module = "number",
  *   field_types = {"number_integer", "number_decimal", "number_float"}

@@ -7,11 +7,12 @@ namespace Drupal\list_formatter\Plugin\list_formatter\type;
 
 use Drupal\Component\Annotation\Plugin;
 use Drupal\list_formatter\Plugin\ListFormatterListInterface;
+use Drupal\taxonomy\Entity\Term;
 
 /**
  * Plugin implementation of the taxonomy module.
  *
- * @Plugin(
+ * @ListFormatter(
  *   id = "taxonomy",
  *   module = "taxonomy",
  *   field_types = {"taxonomy_term_reference"}
@@ -24,14 +25,14 @@ class TaxonomyList implements ListFormatterListInterface {
    */
   public function createList($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
     $settings = $display['settings'];
-    $list_items = $tids = array();
+    $list_items = $tids = [];
 
     // Get an array of tids only.
     foreach ($items as $item) {
       $tids[] = $item['tid'];
     }
 
-    $terms = taxonomy_term_load_multiple($tids);
+    $terms = Term::loadMultiple($tids);
 
     foreach ($items as $delta => $item) {
       // Check the term for this item has actually been loaded.
@@ -59,11 +60,11 @@ class TaxonomyList implements ListFormatterListInterface {
    */
   public function additionalSettings(&$elements, $field, $instance, $formatter) {
     if ($field['type'] == 'taxonomy_term_reference') {
-      $elements['term_plain'] = array(
+      $elements['term_plain'] = [
         '#type' => 'checkbox',
         '#title' => t("Display taxonomy terms as plain text (Not term links)."),
         '#default_value' => $formatter->getSetting('term_plain'),
-      );
+      ];
     }
   }
 
