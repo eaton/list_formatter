@@ -7,11 +7,14 @@
 
 namespace Drupal\list_formatter\Plugin\Field\FieldFormatter;
 
-use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Annotation\Translation;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'text_default' formatter.
@@ -22,7 +25,53 @@ use Drupal\Core\Form\FormStateInterface;
  *   field_types = {},
  * )
  */
-class ListFormatter extends FormatterBase {
+class ListFormatter extends FormatterBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * @var \Drupal\Component\Plugin\PluginManagerInterface|\Drupal\list_formatter\Plugin\ListFormatterPluginManager
+   */
+  protected $listFormatterManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $plugin_id,
+      $plugin_definition,
+      $configuration['field_definition'],
+      $configuration['settings'],
+      $configuration['label'],
+      $configuration['view_mode'],
+      $configuration['third_party_settings'],
+      $container->get('plugin.manager.list_formatter')
+    );
+  }
+
+  /**
+   * Constructs a new LinkFormatter.
+   *
+   * @param string $plugin_id
+   *   The plugin_id for the formatter.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
+   *   The definition of the field to which the formatter is associated.
+   * @param array $settings
+   *   The formatter settings.
+   * @param string $label
+   *   The formatter label display setting.
+   * @param string $view_mode
+   *   The view mode.
+   * @param array $third_party_settings
+   *   Third party settings.
+   * @param \Drupal\list_formatter\Plugin\ListFormatterPluginManager $list_formatter_manager
+   *   The list manager plugin manager.
+   */
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, PluginManagerInterface $list_formatter_manager) {
+    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
+    $this->listFormatterManager = $list_formatter_manager;
+  }
 
   /**
    * {@inheritdoc}
@@ -152,9 +201,8 @@ class ListFormatter extends FormatterBase {
       '#element_validate' => ['_list_formatter_validate_class'],
     ];
 
-    $manager = \Drupal::service('plugin.manager.list_formatter');
-    foreach ($manager->getDefinitions() as $id => $definition) {
-      $manager->createInstance($id)->additionalSettings($elements, $this->fieldDefinition, $this);
+    foreach ($this->listFormatterManager->getDefinitions() as $id => $definition) {
+      $this->listFormatterManager->createInstance($id)->additionalSettings($elements, $this->fieldDefinition, $this);
     }
 
     return $elements;
@@ -186,18 +234,18 @@ class ListFormatter extends FormatterBase {
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $provider = $this->fieldDefinition->getFieldStorageDefinition()->getProvider();
     $field_type = $this->fieldDefinition->getType();
-    $list_formatter_info = $this->fieldListInfo(TRUE);
-    $manager = \Drupal::service('plugin.manager.list_formatter');
+    $list_formatter_info = $this->listFormatterManager->fieldListInfo(TRUE);
 
     $elements = $list_items = [];
 
     if (in_array($field_type, $list_formatter_info['field_types'][$provider])) {
-      if ($plugin = $manager->createInstance($provider)) {
+      if ($plugin = $this->listFormatterManager->createInstance($provider)) {
         $list_items = $plugin->createList($items, $this->fieldDefinition, $langcode);
       }
     }
     else {
-      $plugin = $manager->createInstance('default');
+      // @todo Convert to fallback plugin ID.
+      $plugin = $this->listFormatterManager->createInstance('default');
       foreach ($items as $delta => $item) {
         $list_items = $plugin->createList($items, $this->fieldDefinition, $langcode);
       }
@@ -241,45 +289,6 @@ class ListFormatter extends FormatterBase {
     }
 
     return $elements;
-  }
-
-  /**
-   * Returns an array of info to add to hook_field_formatter_info_alter().
-   *
-   * This iterates through each item returned from fieldListInfo.
-   *
-   * @param bool $module_key
-   *
-   * @return array
-   *   An array of fields and settings from hook_list_formatter_field_info data
-   *   implementations. Containing an aggregated array from all items.
-   */
-  static public function fieldListInfo($module_key = FALSE) {
-    $manager = \Drupal::service('plugin.manager.list_formatter');
-    $field_info = ['field_types' => [], 'settings' => []];
-
-    // Create array of all field types and default settings.
-    foreach ($manager->getDefinitions() as $id => $definition) {
-      $field_types = [];
-
-      if ($module_key) {
-        // @todo Add the module and key by plugin id, so they can be independent.
-        $module = $definition['module'];
-        // Add field types by module.
-        foreach ($definition['field_types'] as $type) {
-          $field_types[$module][] = $type;
-        }
-      }
-      // Otherwise just merge this, as is. Don't need mergeDeep here.
-      else {
-        $field_types = array_merge($field_types, $definition['field_types']);
-      }
-
-      $field_info['field_types'] = NestedArray::mergeDeep($field_info['field_types'], $field_types);
-      $field_info['settings'] = NestedArray::mergeDeep($field_info['settings'], $definition['settings']);
-    }
-
-    return $field_info;
   }
 
   /**

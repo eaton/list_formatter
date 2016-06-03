@@ -7,6 +7,7 @@
 
 namespace Drupal\list_formatter\Plugin;
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -33,6 +34,47 @@ class ListFormatterPluginManager extends DefaultPluginManager {
     parent::__construct('Plugin/list_formatter', $namespaces, $module_handler, ListFormatterListInterface::class, 'Drupal\list_formatter\Annotation\ListFormatter');
     $this->alterInfo('field_info');
     $this->setCacheBackend($cache_backend, 'list_formatter_plugins');
+  }
+
+  /**
+   * Returns an array of info to add to hook_field_formatter_info_alter().
+   *
+   * This iterates through each item returned from fieldListInfo.
+   *
+   * @param bool $module_key
+   *
+   * @return array
+   *   An array of fields and settings from hook_list_formatter_field_info data
+   *   implementations. Containing an aggregated array from all items.
+   */
+   public function fieldListInfo($module_key = FALSE) {
+    $field_info = [
+      'field_types' => [],
+      'settings' => [],
+    ];
+
+    // Create array of all field types and default settings.
+    foreach ($this->getDefinitions() as $id => $definition) {
+      $field_types = [];
+
+      if ($module_key) {
+        // @todo Add the module and key by plugin id, so they can be independent.
+        $module = $definition['module'];
+        // Add field types by module.
+        foreach ($definition['field_types'] as $type) {
+          $field_types[$module][] = $type;
+        }
+      }
+      // Otherwise just merge this, as is. Don't need mergeDeep here.
+      else {
+        $field_types = array_merge($field_types, $definition['field_types']);
+      }
+
+      $field_info['field_types'] = NestedArray::mergeDeep($field_info['field_types'], $field_types);
+      $field_info['settings'] = NestedArray::mergeDeep($field_info['settings'], $definition['settings']);
+    }
+
+    return $field_info;
   }
 
 }

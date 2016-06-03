@@ -34,7 +34,7 @@ function list_formatter_help($path, $arg) {
  * Implements hook_field_formatter_info_alter().
  */
 function list_formatter_field_formatter_info_alter(&$info) {
-  $list_formatter_info = ListFormatter::fieldListInfo();
+  $list_formatter_info = \Drupal::service('plugin.manager.list_formatter')->fieldListInfo();
   $info['list_formatter']['field_types'] = $list_formatter_info['field_types'];
   $info['list_formatter']['settings']['contrib'] = $list_formatter_info['settings'];
 }
@@ -76,6 +76,7 @@ function _list_formatter_validate_class($element, &$form_state) {
  */
 function theme_list_formatter_comma($variables) {
   $items = $variables['items'];
+  /** @var \Drupal\Core\Field\FormatterInterface $formatter */
   $formatter = $variables['formatter'];
   $attributes = new Attribute($variables['attributes']);
 
