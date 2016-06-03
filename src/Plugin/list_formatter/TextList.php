@@ -25,22 +25,30 @@ class TextList implements ListFormatterListInterface {
    * @todo.
    */
   public function createList(FieldItemListInterface $items, FieldDefinitionInterface $field_definition, $langcode) {
-    $settings = $display['settings'];
-    $list_items = array();
+    $list_items = [];
 
-    if ($field['type'] == 'text_long') {
+    if ($field_definition->getType() === 'text_long') {
       foreach ($items as $delta => $item) {
         // Explode on new line char, trim whitespace (if any), then array filter (So any empty lines will actually be removed).
         $long_text_items = array_filter(array_map('trim', explode("\n", $item['value'])));
         foreach ($long_text_items as $long_text_item) {
-          // @see _text_sanitize(), text.module
-          $list_items[] = ($instance['settings']['text_processing'] ? check_markup($long_text_item, $item['format'], $langcode) : field_filter_xss($long_text_item));
+          $list_items[] = [
+            '#type' => 'processed_text',
+            '#text' => $long_text_item,
+            '#format' => $item->format,
+            '#langcode' => $item->getLangcode(),
+          ];
         }
       }
     }
     else {
       foreach ($items as $delta => $item) {
-        $list_items[] = ($instance['settings']['text_processing'] ? check_markup($item['value'], $item['format'], $langcode) : field_filter_xss($item['value']));
+        $list_items[] = [
+          '#type' => 'processed_text',
+          '#text' => $item->value,
+          '#format' => $item->format,
+          '#langcode' => $item->getLangcode(),
+        ];
       }
     }
 

@@ -31,7 +31,7 @@ class LinkList implements ListFormatterListInterface {
     foreach ($items as $delta => $item) {
       $contrib_settings = $display['settings']['list_formatter_contrib'];
 
-      $list_items[] = theme('link_formatter_' . $contrib_settings['link_field_display_type'], array('element' => $item, 'field' => $instance));
+      $list_items[] = theme('link_formatter_' . $contrib_settings['link_field_display_type'], ['element' => $item, 'field' => $instance]);
     }
 
     return $list_items;

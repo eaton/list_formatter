@@ -5,6 +5,7 @@
 
 namespace Drupal\list_formatter\Plugin\list_formatter;
 
+use Drupal\Core\Field\FieldFilteredMarkup;
 use Drupal\list_formatter\Plugin\ListFormatterListInterface;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -46,11 +47,19 @@ class TaxonomyList implements ListFormatterListInterface {
       $term_name = ($item['tid'] === 'autocreate') ? $item['name'] : $terms[$item['tid']]->label();
       // Check if we should display as term links or not.
       if ($settings['term_plain'] || ($item['tid'] === 'autocreate')) {
-        $list_items[$delta] = check_plain($term_name);
+        $list_items[$delta] = [
+          '#markup' => $term_name,
+          '#allowed_tags' => FieldFilteredMarkup::allowedTags(),
+        ];
       }
       else {
-        $uri = $terms[$item['tid']]->uri();
-        $list_items[$delta] = l($term_name, $uri['path']);
+        $url = $terms[$item['tid']]->toUrl();
+        $list_items[$delta] = [
+          '#type' => 'link',
+          '#title' => $term_name,
+          '#url' => $url,
+          '#options' => []
+        ];
       }
     }
 
@@ -61,7 +70,7 @@ class TaxonomyList implements ListFormatterListInterface {
    * @todo.
    */
   public function additionalSettings(&$elements, FieldDefinitionInterface $field_definition, FormatterInterface $formatter) {
-    if ($field['type'] == 'taxonomy_term_reference') {
+    if ($field_definition->getType() === 'taxonomy_term_reference') {
       $elements['term_plain'] = [
         '#type' => 'checkbox',
         '#title' => t("Display taxonomy terms as plain text (Not term links)."),

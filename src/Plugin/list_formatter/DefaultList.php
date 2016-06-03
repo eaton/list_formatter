@@ -8,10 +8,10 @@
 namespace Drupal\list_formatter\Plugin\list_formatter;
 
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldFilteredMarkup;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterInterface;
 use Drupal\list_formatter\Plugin\ListFormatterListInterface;
-use Drupal\filter\Render\FilteredMarkup;
 
 /**
  * Default list implementation plugin.
@@ -33,7 +33,10 @@ class DefaultList implements ListFormatterListInterface {
     $value_key = $field_definition->getFieldStorageDefinition()->getMainPropertyName();
 
     foreach ($items as $delta => $item) {
-      $list_items[$delta] = FilteredMarkup::create($item->{$value_key});
+      $list_items[$delta] = [
+        '#markup' => $item->{$value_key},
+        '#allowed_tags' => FieldFilteredMarkup::allowedTags(),
+      ];;
     }
 
     return $list_items;
@@ -43,19 +46,6 @@ class DefaultList implements ListFormatterListInterface {
    * @todo.
    */
   public function additionalSettings(&$elements, FieldDefinitionInterface $field_definition, FormatterInterface $formatter) {
-  }
-
-  /**
-   * Helper to return the value key for a field instance.
-   *
-   * @param $field array
-   *  The whole array of field instance info provided by the field api.
-   *
-   * @return string
-   *  The value key for the field.
-   */
-  public function getFieldValueKey(array $field) {
-    return (array_key_exists('columns', $field) && is_array($field['columns'])) ? key($field['columns']) : 'value';
   }
 
 }
