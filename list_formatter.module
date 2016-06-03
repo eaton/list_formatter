@@ -5,9 +5,9 @@
  * Provide a field formatter to render values as HTML or comma-separated lists.
  */
 
-use Drupal\list_formatter\Plugin\Field\FieldFormatter\ListFormatter;
 use Drupal\Core\Template\Attribute;
-use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_help().
@@ -45,6 +45,8 @@ function list_formatter_field_formatter_info_alter(&$info) {
 function list_formatter_theme($existing, $type, $theme, $path) {
   return array(
     'list_formatter_comma' => [
+      // @todo Convert theme function to twig template.
+      'function' => 'theme_list_formatter_comma',
       'variables' => [
         'items' => NULL,
         'formatter' => NULL,
@@ -60,12 +62,12 @@ function list_formatter_theme($existing, $type, $theme, $path) {
  *
  * @see list_formatter_field_formatter_settings_form()
  */
-function _list_formatter_validate_class($element, &$form_state) {
-  $value = NestedArray::getValue($form_state['values'], $element['#parents']);
+function _list_formatter_validate_class($element,  FormStateInterface $form_state) {
+  $value = $form_state->getValue($element['#parents']);
   $classes = explode(' ', $value);
   foreach ($classes as $class) {
-    if ($class != drupal_html_class($class)) {
-      form_error($element, t('List classes contain illegal characters; classes should be lowercase and may contain letters, numbers, and dashes.'));
+    if ($class != Html::getClass($class)) {
+      $form_state->setError($element, t('List classes contain illegal characters; classes should be lowercase and may contain letters, numbers, and dashes.'));
       return;
     }
   }

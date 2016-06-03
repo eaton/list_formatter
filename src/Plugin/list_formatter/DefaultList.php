@@ -27,13 +27,13 @@ class DefaultList implements ListFormatterListInterface {
    * Implements \Drupal\list_formatter\Plugin\ListFormatterListInterface::createList().
    */
   public function createList(FieldItemListInterface $items, FieldDefinitionInterface $field_definition, $langcode) {
-    $list_items = array();
+    $list_items = [];
 
     // Use our helper function to get the value key dynamically.
-    $value_key = $this->getFieldValueKey($this->field);
+    $value_key = $field_definition->getFieldStorageDefinition()->getMainPropertyName();
 
     foreach ($items as $delta => $item) {
-      $list_items[$delta] = FilteredMarkup::create($item[$value_key]);
+      $list_items[$delta] = FilteredMarkup::create($item->{$value_key});
     }
 
     return $list_items;
