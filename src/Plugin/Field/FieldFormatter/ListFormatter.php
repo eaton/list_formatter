@@ -15,6 +15,7 @@ use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Component\Utility\Html;
 
 /**
  * Plugin implementation of the 'text_default' formatter.
@@ -172,7 +173,7 @@ class ListFormatter extends FormatterBase implements ContainerFactoryPluginInter
       '#type' => 'textfield',
       '#description' => $this->t('A CSS class to use in the wrapper tag for the separator.'),
       '#default_value' => $this->getSetting('separator_custom_class'),
-      '#element_validate' => ['_list_formatter_validate_class'],
+      '#element_validate' => [[get_class($this), 'validateClasses']],
       '#states' => [
         'visible' => [
           ':input[name="fields[' . $field_name . '][settings_edit_form][settings][comma_override]"]' => ['checked' => TRUE],
@@ -198,7 +199,7 @@ class ListFormatter extends FormatterBase implements ContainerFactoryPluginInter
       '#type' => 'textfield',
       '#size' => 40,
       '#default_value' => $this->getSetting('class'),
-      '#element_validate' => ['_list_formatter_validate_class'],
+      '#element_validate' => [[get_class($this), 'validateClasses']],
     ];
 
     foreach ($this->listFormatterManager->getDefinitions() as $id => $definition) {
@@ -324,6 +325,23 @@ class ListFormatter extends FormatterBase implements ContainerFactoryPluginInter
       'h5' => $this->t('Header 5'),
       'h6' => $this->t('Header 6'),
     ];
+  }
+
+  /**
+   * Validate that a space-separated list of values are lowercase and appropriate
+   * for use as HTML classes.
+   *
+   * @see list_formatter_field_formatter_settings_form()
+   */
+  public static function validateClasses($element,  FormStateInterface $form_state) {
+    $value = $form_state->getValue($element['#parents']);
+    $classes = explode(' ', $value);
+    foreach ($classes as $class) {
+      if ($class != Html::getClass($class)) {
+        $form_state->setError($element, t('List classes contain illegal characters; classes should be lowercase and may contain letters, numbers, and dashes.'));
+        return;
+      }
+    }
   }
 
 }

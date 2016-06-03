@@ -6,8 +6,6 @@
  */
 
 use Drupal\Core\Template\Attribute;
-use Drupal\Component\Utility\Html;
-use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_help().
@@ -54,23 +52,6 @@ function list_formatter_theme($existing, $type, $theme, $path) {
       ],
     ],
   );
-}
-
-/**
- * Validate that a space-separated list of values are lowercase and appropriate
- * for use as HTML classes.
- *
- * @see list_formatter_field_formatter_settings_form()
- */
-function _list_formatter_validate_class($element,  FormStateInterface $form_state) {
-  $value = $form_state->getValue($element['#parents']);
-  $classes = explode(' ', $value);
-  foreach ($classes as $class) {
-    if ($class != Html::getClass($class)) {
-      $form_state->setError($element, t('List classes contain illegal characters; classes should be lowercase and may contain letters, numbers, and dashes.'));
-      return;
-    }
-  }
 }
 
 /**
