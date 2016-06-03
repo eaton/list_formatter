@@ -5,9 +5,11 @@
  * Contains ....
  */
 
-namespace Drupal\list_formatter\Plugin\list_formatter\type;
+namespace Drupal\list_formatter\Plugin\list_formatter;
 
-use Drupal\Component\Annotation\Plugin;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterInterface;
 use Drupal\list_formatter\Plugin\ListFormatterListInterface;
 
 /**
@@ -23,7 +25,7 @@ class DefaultList implements ListFormatterListInterface {
   /**
    * Implements \Drupal\list_formatter\Plugin\ListFormatterListInterface::createList().
    */
-  public function createList($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  public function createList(FieldItemListInterface $items, FieldDefinitionInterface $field_definition, $langcode) {
     $list_items = array();
 
     // Use our helper function to get the value key dynamically.
@@ -39,7 +41,7 @@ class DefaultList implements ListFormatterListInterface {
   /**
    * @todo.
    */
-  public function additionalSettings(&$elements, $field, $instance, $formatter) {
+  public function additionalSettings(&$elements, FieldDefinitionInterface $field_definition, FormatterInterface $formatter) {
   }
 
   /**

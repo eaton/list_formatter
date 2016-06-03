@@ -3,11 +3,13 @@
  * @file
  */
 
-namespace Drupal\list_formatter\Plugin\list_formatter\type;
+namespace Drupal\list_formatter\Plugin\list_formatter;
 
-use Drupal\Component\Annotation\Plugin;
 use Drupal\list_formatter\Plugin\ListFormatterListInterface;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FormatterInterface;
 
 /**
  * Plugin implementation of the taxonomy module.
@@ -23,7 +25,7 @@ class TaxonomyList implements ListFormatterListInterface {
   /**
    * @todo.
    */
-  public function createList($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  public function createList(FieldItemListInterface $items, FieldDefinitionInterface $field_definition, $langcode) {
     $settings = $display['settings'];
     $list_items = $tids = [];
 
@@ -58,7 +60,7 @@ class TaxonomyList implements ListFormatterListInterface {
   /**
    * @todo.
    */
-  public function additionalSettings(&$elements, $field, $instance, $formatter) {
+  public function additionalSettings(&$elements, FieldDefinitionInterface $field_definition, FormatterInterface $formatter) {
     if ($field['type'] == 'taxonomy_term_reference') {
       $elements['term_plain'] = [
         '#type' => 'checkbox',

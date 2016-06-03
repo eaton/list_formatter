@@ -30,7 +30,7 @@ class ListFormatterPluginManager extends DefaultPluginManager {
    *   The typed data manager.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/list_formatter', $namespaces, $module_handler, 'Drupal\Core\Field\FieldItemInterface', 'Drupal\list_formatter\Annotation\ListFormatter');
+    parent::__construct('Plugin/list_formatter', $namespaces, $module_handler, ListFormatterListInterface::class, 'Drupal\list_formatter\Annotation\ListFormatter');
     $this->alterInfo('field_info');
     $this->setCacheBackend($cache_backend, 'list_formatter_plugins');
   }

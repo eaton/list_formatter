@@ -7,22 +7,21 @@
 
 namespace Drupal\list_formatter\Plugin;
 
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterInterface;
+
 interface ListFormatterListInterface {
 
   /**
-   * [createList description]
+   * Creates a list from field items.
    *
-   * @param  [type] $entity_type
-   * @param  [type] $entity
-   * @param  [type] $field
-   * @param  [type] $instance
    * @param  [type] $langcode
    * @param  [type] $items
-   * @param  [type] $display
    *
    * @return array
    */
-  public function createList($entity_type, $entity, $field, $instance, $langcode, $items, $display);
+  public function createList(FieldItemListInterface $items, FieldDefinitionInterface $field_definition, $langcode);
 
   /**
    * [additionalSettings description]
@@ -31,6 +30,6 @@ interface ListFormatterListInterface {
    * @param  [type] $form_state
    * @param  [type] $context
    */
-  public function additionalSettings(&$elements, $field, $instance, $formatter);
+  public function additionalSettings(&$elements, FieldDefinitionInterface $field_definition, FormatterInterface $formatter);
 
 }

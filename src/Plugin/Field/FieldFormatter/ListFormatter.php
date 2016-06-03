@@ -9,7 +9,6 @@ namespace Drupal\list_formatter\Plugin\Field\FieldFormatter;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Annotation\Translation;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -21,22 +20,33 @@ use Drupal\Core\Form\FormStateInterface;
  *   id = "list_formatter",
  *   label = @Translation("List"),
  *   field_types = {},
- *   settings = {
- *     "type" = "ul",
- *     "class" = "list-formatter-list",
- *     "comma_full_stop" = 0,
- *     "comma_and" = 0,
- *     "comma_tag" = "div",
- *     "term_plain" = 0,
- *     "comma_override" = 0,
- *     "separator_custom" = "",
- *     "separator_custom_tag" = "span",
- *     "separator_custom_class" = "list-formatter-separator",
- *     "contrib" = {}
- *    }
  * )
  */
 class ListFormatter extends FormatterBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function defaultSettings() {
+    $settings = parent::defaultSettings();
+
+    $settings += [
+      'type' => 'ul',
+      'class' => 'list-formatter-list',
+      'comma_full_stop' => 0,
+      'comma_and' => 0,
+      'comma_tag' => 'div',
+      'term_plain' => 0,
+      'comma_override' => 0,
+      'separator_custom' => '',
+      'separator_custom_tag' => 'span',
+      'separator_custom_class' => 'list-formatter-separator',
+      'contrib' => [],
+    ];
+
+    return $settings;
+  }
+
 
   /**
    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::settingsForm().
@@ -129,7 +139,7 @@ class ListFormatter extends FormatterBase {
       '#default_value' => $this->getSetting('comma_tag'),
       '#states' => [
         'visible' => [
-          ':input[name="fields[' . $field_name . '][settings_edit_form][settings][type]"]' => ['value' => 'comma'],
+          ':input[name=fields[' . $field_name . '][settings_edit_form][settings][type]"]' => ['value' => 'comma'],
         ],
       ],
     ];
@@ -142,9 +152,9 @@ class ListFormatter extends FormatterBase {
       '#element_validate' => ['_list_formatter_validate_class'],
     ];
 
-    $manager = \Drupal::service('plugin.manager.list_formatter.type');
+    $manager = \Drupal::service('plugin.manager.list_formatter');
     foreach ($manager->getDefinitions() as $id => $definition) {
-      $manager->createInstance($id)->additionalSettings($elements, $this->field, $this->instance, $this);
+      $manager->createInstance($id)->additionalSettings($elements, $this->fieldDefinition, $this);
     }
 
     return $elements;
@@ -154,18 +164,18 @@ class ListFormatter extends FormatterBase {
    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::settingsSummary().
    */
   public function settingsSummary() {
-    $summary = array();
+    $summary = [];
 
-    $types = $this->listTypes();
-    $summary[] = $types[$this->getSetting('type')];
-
-    if ($this->getSetting('class')) {
-      $summary[] = t("CSS Class") . ': <em>' . check_plain($this->getSetting('class')) . '</em>';
-    }
-
-    if ($this->getSetting('comma_override')) {
-      $summary[] = '<em>*' . t("Comma separator overridden") . '*</em>';
-    }
+//    $types = $this->listTypes();
+//    $summary[] = $types[$this->getSetting('type')];
+//
+//    if ($this->getSetting('class')) {
+//      $summary[] = t("CSS Class") . ': <em>' . check_plain($this->getSetting('class')) . '</em>';
+//    }
+//
+//    if ($this->getSetting('comma_override')) {
+//      $summary[] = '<em>*' . t("Comma separator overridden") . '*</em>';
+//    }
 
     return $summary;
   }
@@ -175,32 +185,26 @@ class ListFormatter extends FormatterBase {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $module = $this->field['module'];
-    $field_type = $this->field['type'];
+    $field_type = $this->fieldDefinition->getType();
     $list_formatter_info = $this->fieldListInfo(TRUE);
     $elements = $list_items = array();
     $manager = \Drupal::service('plugin.manager.list_formatter');
 
     if (in_array($field_type, $list_formatter_info['field_types'][$module])) {
       if ($plugin = $manager->createInstance($module)) {
-        // Support existing function implementations.
-        $display = array(
-          'type' => $this->getPluginId(),
-          'settings' => $this->getSettings(),
-          'label' => $this->label,
-        );
-        $list_items = $plugin->createList($entity->entityType(), $entity, $this->field, $this->instance, $langcode, $items, $display);
+        $list_items = $plugin->createList($items, $this->fieldDefinition, $langcode);
       }
     }
     else {
       $plugin = $manager->createInstance('default');
       foreach ($items as $delta => $item) {
-        $list_items = $plugin->createList($entity->entityType(), $entity, $this->field, $this->instance, $langcode, $items, $display);
+        $list_items = $plugin->createList($items, $this->fieldDefinition, $langcode);
       }
     }
 
     // If there are no list items, return and render nothing.
     if (empty($list_items)) {
-      return;
+      return [];
     }
 
     $type = $this->getSetting('type');
@@ -284,11 +288,11 @@ class ListFormatter extends FormatterBase {
    *   An options list of types.
    */
   public function listTypes() {
-    return array(
+    return [
       'ul' => $this->t("Unordered HTML list (ul)"),
       'ol' => $this->t("Ordered HTML list (ol)"),
       'comma' => $this->t("Comma separated list"),
-    );
+    ];
   }
 
   /**
@@ -298,7 +302,7 @@ class ListFormatter extends FormatterBase {
    *   A keyed array of available html tags.
    */
   public function wrapperOptions() {
-    return array(
+    return [
       $this->t('No HTML tag'),
       'div' => $this->t('Div'),
       'span' => $this->t('Span'),
@@ -309,7 +313,7 @@ class ListFormatter extends FormatterBase {
       'h4' => $this->t('Header 4'),
       'h5' => $this->t('Header 5'),
       'h6' => $this->t('Header 6'),
-    );
+    ];
   }
 
 }

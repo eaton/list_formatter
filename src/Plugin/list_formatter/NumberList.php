@@ -4,9 +4,7 @@
  * @file
  */
 
-namespace Drupal\list_formatter\Plugin\list_formatter\type;
-
-use Drupal\Component\Annotation\Plugin;
+namespace Drupal\list_formatter\Plugin\list_formatter;
 
 /**
  * Plugin implementation of the taxonomy module.
