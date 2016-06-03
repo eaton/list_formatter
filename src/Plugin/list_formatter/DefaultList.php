@@ -11,6 +11,7 @@ use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterInterface;
 use Drupal\list_formatter\Plugin\ListFormatterListInterface;
+use Drupal\filter\Render\FilteredMarkup;
 
 /**
  * Default list implementation plugin.
@@ -32,7 +33,7 @@ class DefaultList implements ListFormatterListInterface {
     $value_key = $this->getFieldValueKey($this->field);
 
     foreach ($items as $delta => $item) {
-      $list_items[$delta] = check_plain($item[$value_key]);
+      $list_items[$delta] = FilteredMarkup::create($item[$value_key]);
     }
 
     return $list_items;
