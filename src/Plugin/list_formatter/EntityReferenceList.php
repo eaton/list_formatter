@@ -18,8 +18,9 @@ use Drupal\Component\Utility\Html;
  * Default list implementation plugin.
  *
  * @ListFormatter(
- *   id = "entityreference",
- *   module = "entityreference",
+ *   id = "entity_reference",
+ *   module = "field",
+ *   field_types = {"entity_reference"},
  *   settings = {
  *     "entityreference_link" = "1"
  *   }
@@ -83,7 +84,7 @@ class EntityReferenceList implements ListFormatterListInterface {
    * @todo.
    */
   public function additionalSettings(&$elements, FieldDefinitionInterface $field_definition, FormatterInterface $formatter) {
-    if ($field_definition->getType() == 'entityreference') {
+    if ($field_definition->getType() == 'entity_reference') {
       $settings = $field_definition->getSetting('contrib');
       $form['list_formatter_contrib']['entityreference_link'] = [
         '#type' => 'checkbox',

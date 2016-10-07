@@ -233,14 +233,13 @@ class ListFormatter extends FormatterBase implements ContainerFactoryPluginInter
    * Implements Drupal\field\Plugin\Type\Formatter\FormatterInterface::viewElements().
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
-    $provider = $this->fieldDefinition->getFieldStorageDefinition()->getProvider();
     $field_type = $this->fieldDefinition->getType();
     $list_formatter_info = $this->listFormatterManager->fieldListInfo(TRUE);
 
     $elements = $list_items = [];
 
-    if (in_array($field_type, $list_formatter_info['field_types'][$provider])) {
-      if ($plugin = $this->listFormatterManager->createInstance($provider)) {
+    if (in_array($field_type, $list_formatter_info['field_types'])) {
+      if ($plugin = $this->listFormatterManager->createInstance($list_formatter_info['field_types'][$field_type])) {
         $list_items = $plugin->createList($items, $this->fieldDefinition, $langcode);
       }
     }
